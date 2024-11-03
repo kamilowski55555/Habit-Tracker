@@ -1,0 +1,70 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+frontend/node_modules/
+
+# Build directories
+dist/
+dist-ssr/
+target/
+build/
+**/src/main/**/target/
+**/src/test/**/target/
+**/src/main/**/build/
+**/src/test/**/build/
+
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Spring Tool Suite (STS) specific files
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA specific files
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VS Code specific files
+.vscode/
+!.vscode/extensions.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+*.env
+*.local
+
+# Editor-specific files
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*sw?
+
+# Editor-based HTTP Client requests (IntelliJ)
+httpRequests/
+
+# Data source local storage ignored files (IntelliJ)
+dataSources/
+dataSources.local.xml
+
+# Shelf (IntelliJ specific)
+shelf/
+.idea/workspace.xml
