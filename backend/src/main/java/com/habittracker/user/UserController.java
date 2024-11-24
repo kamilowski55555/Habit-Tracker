@@ -1,8 +1,10 @@
-package com.habittracker.user.controller;
+package com.habittracker.user;
 
+import com.habittracker.user.dto.UserDetailsDto;
+import com.habittracker.user.dto.UserListDto;
 import com.habittracker.user.dto.UserRegisterDto;
 import com.habittracker.user.dto.UserUpdateDto;
-import com.habittracker.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,25 +27,25 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<?> geUsersList() {
+    public ResponseEntity<List<UserListDto>> geUsersList() {
         // Zwraca listę wszystkich użytkowników (tylko admin)
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegisterDto userDTO) {
-        // Rejestruje nowego użytkownika
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> registerUser(@Valid @RequestBody UserRegisterDto userRegisterDto) {
+        userService.registerUser(userRegisterDto);
+        return ResponseEntity.status(201).build();
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserDetails(@PathVariable UUID userId) {
-        // Zwraca szczegóły użytkownika (dla użytkownika lub admina)
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UserDetailsDto> getUserDetails(@PathVariable UUID userId) {
+        UserDetailsDto userDetailsDto = userService.getUserDetails(userId);
+        return ResponseEntity.ok(userDetailsDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateDto updateDTO) {
+    public ResponseEntity<Void> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateDto updateDTO) {
         // Aktualizuje dane użytkownika (dla użytkownika lub admina)
         return ResponseEntity.ok().build();
     }

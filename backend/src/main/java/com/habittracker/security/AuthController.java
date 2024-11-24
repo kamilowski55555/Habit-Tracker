@@ -1,9 +1,8 @@
-package com.habittracker.security.controller;
+package com.habittracker.security;
 
 import com.habittracker.security.dto.LogoutDto;
 import com.habittracker.security.dto.RefreshTokenDto;
 import com.habittracker.security.dto.UserLoginDto;
-import com.habittracker.security.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

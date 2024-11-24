@@ -1,15 +1,15 @@
 package com.habittracker.user.dto;
 
-import com.habittracker.user.model.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-//tu robimy walidacja
+
+@Getter
+@Setter
 public class UserRegisterDto {
 
     @NotBlank(message = "Email cannot be empty.")
@@ -22,10 +22,8 @@ public class UserRegisterDto {
     private String password;
 
     @NotBlank
-    @Size
     private String firstName;
 
     @NotBlank
-    @Size
     private String lastName;
 }

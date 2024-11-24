@@ -1,4 +1,4 @@
-package com.habittracker.security.service;
+package com.habittracker.security;
 
 import org.springframework.stereotype.Service;
 

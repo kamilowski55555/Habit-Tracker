@@ -1,4 +1,4 @@
-package com.habittracker.user.model;
+package com.habittracker.user;
 
 public enum Role {
     ROLE_USER,
