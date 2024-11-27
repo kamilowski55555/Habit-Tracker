@@ -1,9 +1,10 @@
 package com.habittracker.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.habittracker.common.exception.ErrorResponse;
+import com.habittracker.common.exception.TokenVersionInvalidException;
 import com.habittracker.user.User;
 import com.habittracker.user.UserRepository;
-import com.habittracker.common.exception.ErrorResponse;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -44,10 +46,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .orElseThrow(() -> new RuntimeException("User not found"));
 
                 if (!user.getTokenVersion().equals(tokenVersion)) {
-                    throw new RuntimeException("Invalid token version");
+                    throw new TokenVersionInvalidException("Invalid token version");
                 }
 
-                var auth = new UsernamePasswordAuthenticationToken(
+                Authentication auth = new UsernamePasswordAuthenticationToken(
                         userId,
                         null,
                         user.getAuthorities()
@@ -75,5 +77,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("UTF-8");
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-}
+    }
 }
