@@ -14,7 +14,10 @@ import java.util.UUID;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "your-256-bit-secret-your-256-bit-secret";
+    //TODO: as stated in secret key string, it should be done via SSL, but for the sake of development speed, we will use a string for now
+    private static final String SECRET_KEY = "either-path-to-file-containing-string-(less work-BUT-HARAM)-OR-via-generated-SSL-key-pairs-(HALAL)";
+
+    //TODO: should be kept in a secure location, not in the code
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

@@ -27,9 +27,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserListDto>> geUsersList() {
-        // Zwraca listę wszystkich użytkowników (tylko admin)
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<UserListDto>> getUsersList() {
+        return ResponseEntity.status(501).build();
     }
 
     @PostMapping("/register")
@@ -46,13 +45,11 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Void> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateDto updateDTO) {
-        // Aktualizuje dane użytkownika (dla użytkownika lub admina)
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(501).build();
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
-        // Usuwa konto użytkownika (dla użytkownika lub admina)
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(501).build();
     }
 }

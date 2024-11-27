@@ -71,13 +71,13 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Zwracamy role użytkownika. Możemy to rozszerzyć o pełne uprawnienia.
+        //We return user's role, for now it's just one role
         return Collections.singletonList(() -> role.name());
     }
 
     @Override
     public String getUsername() {
-        return email; // `username` for Spring security is `email` in our case
+        return email;
     }
 
     @Override
@@ -87,21 +87,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // We assume that the account never expires
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // We assume that the account is never locked
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // We assume that the credentials never expire
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;   // We assume that the account is always enabled
+        return true;
     }
 }
