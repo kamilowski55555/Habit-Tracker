@@ -22,3 +22,18 @@ export const isTokenExpired = (token: string) => {
     }
     return Date.now() >= payload.exp * 1000;
 };
+
+// Retrieve the JWT token from localStorage
+export const getToken = (): string | null => {
+    return localStorage.getItem('token'); // Key should match where you save it
+};
+
+// Store the JWT token in localStorage
+export const setToken = (token: string) => {
+    localStorage.setItem('token', token);
+};
+
+// Clear the JWT token from localStorage
+export const clearToken = () => {
+    localStorage.removeItem('token');
+};

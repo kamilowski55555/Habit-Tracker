@@ -1,7 +1,7 @@
-import React from 'react';
+// import React from 'react';
 import { Outlet } from 'react-router-dom';
-import TopBar from './TopBar';
-import BottomNavBar from './BottomNavBar';
+import TopBar from './shared/TopBar.tsx';
+import BottomNavBar from './shared/BottomNavBar.tsx';
 import Box from '@mui/material/Box';
 
 const AppLayout = () => {
