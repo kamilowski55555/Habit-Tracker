@@ -1,5 +1,6 @@
 package com.habittracker.user;
 
+import com.habittracker.common.exception.UserNotFoundException;
 import com.habittracker.user.dto.UserDetailsDto;
 import com.habittracker.user.dto.UserRegisterDto;
 import lombok.RequiredArgsConstructor;
@@ -40,16 +41,26 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDetailsDto getUserDetails(UUID id) {
-        return userRepository.findById(id)
-                .map(user -> UserDetailsDto.builder()
+        User user = getUserById(id);
+        return UserDetailsDto.builder()
                         .id(user.getId())
                         .email(user.getEmail())
                         .firstName(user.getFirstName())
                         .lastName(user.getLastName())
                         .createdAt(user.getCreatedAt())
                         .modifiedAt(user.getModifiedAt())
-                        .build())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+                        .build();
+    }
+
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+    }
+
+    public void checkIfUserExists(UUID userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException("User not found with ID: " + userId);
+        }
     }
 }
 
