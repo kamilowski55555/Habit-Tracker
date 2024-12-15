@@ -7,3 +7,15 @@ export interface UserDto {
     createdAt: string;      // ISO timestamp
     updatedAt?: string;     // ISO timestamp (optional)
 }
+
+export interface LoginPayload {
+    email: string;
+    password: string;
+}
+
+export interface RegisterPayload {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+}

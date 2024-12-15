@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { isTokenExpired } from '../utils/jwt'; // Assuming this is your auth check logic
+import { isTokenExpired } from '../../utils/jwt.ts'; // Assuming this is your auth check logic
 
 interface ProtectedRouteProps {
     element: JSX.Element;

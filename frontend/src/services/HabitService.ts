@@ -1,5 +1,5 @@
 import ApiClient from '../utils/api'; // Centralized Axios instance
-import { HabitCreateDto, HabitDetailsDto, HabitListDto } from '../types';
+import {HabitCreateDto, HabitDetailsDto, HabitListDto, HabitModifyDto} from '../types';
 
 const HABITS_BASE_URL = '/habits';
 
@@ -14,12 +14,24 @@ const HabitService = {
             throw error; // Forward error to the caller
         }
     },
-    //THIS ONE IS MESSED UP, POST ISN'T RETURNING ANYTHING, WE MISS DETAILS HERE, BUT THAT FOR LATER
-    // Create a new habit
-    async createHabit(habitData: HabitCreateDto): Promise<HabitDetailsDto> {
+
+    // Fetch habit details by ID
+    async getHabitDetails(habitId: string): Promise<HabitDetailsDto> {
         try {
-            const response = await ApiClient.post<HabitDetailsDto>(`${HABITS_BASE_URL}`, habitData);
-            return response.data; // Return the created habit's details
+            const response = await ApiClient.get<HabitDetailsDto>(`${HABITS_BASE_URL}/${habitId}`);
+            return response.data; // Return the habit details
+        } catch (error) {
+            console.error(`Error fetching habit details for ID ${habitId}:`, error);
+            throw error;
+        }
+    },
+
+    // Create a new habit
+    async createHabit(habitData: HabitCreateDto): Promise<string> {
+        try {
+            const response = await ApiClient.post(`${HABITS_BASE_URL}`, habitData);
+            const locationHeader = response.headers['location']; // Get the URI from headers
+            return locationHeader; // Return the Location header (URI of created resource)
         } catch (error) {
             console.error('Error creating habit:', error);
             throw error;
@@ -37,7 +49,7 @@ const HabitService = {
     },
 
     // Modify an existing habit
-    async modifyHabit(habitId: string, habitData: HabitCreateDto): Promise<HabitDetailsDto> {
+    async modifyHabit(habitId: string, habitData: HabitModifyDto): Promise<HabitDetailsDto> {
         try {
             const response = await ApiClient.put<HabitDetailsDto>(
                 `${HABITS_BASE_URL}/${habitId}`,

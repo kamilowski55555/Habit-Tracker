@@ -3,10 +3,10 @@ import HomePage from './pages/HomePage';
 import HabitsPage from './pages/HabitsPage';
 import ExtrasPage from './pages/ExtrasPage';
 import ExplorePage from './pages/ExplorePage';
-import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import ProtectedRoute from "./components/layout/ProtectedRoute.tsx";
 import RegisterPage from "./pages/RegisterPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
-import AppLayout from "./components/AppLayout.tsx";
+import AppLayout from "./components/layout/AppLayout.tsx";
 
 //
 

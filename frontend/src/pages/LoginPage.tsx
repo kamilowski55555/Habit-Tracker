@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { LOGIN_URL } from '../utils/api.ts';
+import { useAuth } from '../context/AuthContext';
+import { login } from '../services/AuthService';
+import { LoginPayload } from '../types/UserTypes';
 import { Link } from 'react-router-dom';
 import {
     Box,
@@ -8,13 +10,18 @@ import {
     Typography,
     CircularProgress,
     Alert,
-} from '@mui/material'; // Import MUI components
+} from '@mui/material';
 
-const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false); // Track loading state
-    const [error, setError] = useState(''); // Handle error messages
+const LoginPage: React.FC = () => {
+    const { login: loginToContext } = useAuth(); // Login function from AuthContext
+    const [formData, setFormData] = useState<LoginPayload>({ email: '', password: '' });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,22 +29,11 @@ const LoginPage = () => {
         setError('');
 
         try {
-            const response = await fetch(LOGIN_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('token', data.accessToken);
-                window.location.href = '/home';
-            } else {
-                setError('Invalid credentials. Please try again.');
-            }
-        } catch (error) {
-            console.error('Login failed:', error);
-            setError('An error occurred. Please try again later.');
+            const token = await login(formData); // Call AuthService
+            loginToContext(token); // Save token in AuthContext
+            window.location.href = '/home'; // Redirect to home
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -51,71 +47,49 @@ const LoginPage = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 minHeight: '100vh',
-                backgroundColor: (theme) => theme.palette.background.default,
                 padding: 3,
             }}
         >
-            {/* Title */}
             <Typography variant="h4" gutterBottom>
                 Login
             </Typography>
-
-            {/* Error Message */}
-            {error && (
-                <Alert severity="error" sx={{ marginBottom: 2 }}>
-                    {error}
-                </Alert>
-            )}
-
-            {/* Login Form */}
+            {error && <Alert severity="error">{error}</Alert>}
             <Box
                 component="form"
                 onSubmit={handleSubmit}
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                    width: '100%',
-                    maxWidth: 400,
-                }}
+                sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: 400 }}
             >
-                {/* Email Input */}
                 <TextField
                     label="Email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     fullWidth
                     required
                 />
-
-                {/* Password Input */}
                 <TextField
                     label="Password"
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
                     fullWidth
                     required
                 />
-
-                {/* Submit Button */}
                 <Button
                     type="submit"
                     variant="contained"
                     color="primary"
                     fullWidth
-                    disabled={loading} // Disable while loading
-                    sx={{ height: 48 }}
+                    disabled={loading}
                 >
                     {loading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
                 </Button>
             </Box>
-
-            {/* Register Link */}
             <Typography variant="body2" sx={{ marginTop: 2 }}>
                 Don’t have an account yet?{' '}
-                <Link to="/register" style={{ color: '#1976d2', textDecoration: 'none' }}>
+                <Link to="/register" style={{ textDecoration: 'none', color: '#1976d2' }}>
                     Register
                 </Link>
             </Typography>

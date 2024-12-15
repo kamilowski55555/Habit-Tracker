@@ -24,3 +24,12 @@ export interface HabitCreateDto {
     currencyAmount: number;  // Coins rewarded or deducted
     icon?: string;           // Optional icon
 }
+
+export interface HabitModifyDto {
+    name: string;            // Habit name
+    type: 'GOOD' | 'BAD';    // Habit type
+    targetValue: number;     // Target value for success
+    habitDays: string[];     // Days of the week
+    currencyAmount: number;  // Coins rewarded or deducted
+    icon?: string;           // Optional icon
+}
