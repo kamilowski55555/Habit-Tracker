@@ -1,63 +1,102 @@
 import ApiClient from '../utils/api'; // Centralized Axios instance
-import {HabitCreateDto, HabitDetailsDto, HabitListDto, HabitModifyDto} from '../types';
+import {
+    HabitCreateDto,
+    HabitDetailsDto,
+    HabitListDto,
+    HabitModifyDto,
+} from '../types';
 
 const HABITS_BASE_URL = '/habits';
+
+// Helper function for error handling and logging
+const logError = (action: string, error: any, extraInfo?: string) => {
+    const status = error?.response?.status || 'Unknown';
+    const message = error?.response?.data || error.message || 'No additional error details';
+    console.error(`[HabitService] ${action} failed.`, {
+        status,
+        message,
+        extraInfo,
+        fullError: error,
+    });
+};
 
 const HabitService = {
     // Fetch the list of habits
     async getHabits(): Promise<HabitListDto[]> {
         try {
             const response = await ApiClient.get<HabitListDto[]>(`${HABITS_BASE_URL}`);
-            return response.data; // Habit list returned from the backend
+            return response.data;
         } catch (error) {
-            console.error('Error fetching habits:', error);
-            throw error; // Forward error to the caller
+            logError('Fetching habits', error);
+            throw error;
         }
     },
 
     // Fetch habit details by ID
     async getHabitDetails(habitId: string): Promise<HabitDetailsDto> {
         try {
-            const response = await ApiClient.get<HabitDetailsDto>(`${HABITS_BASE_URL}/${habitId}`);
-            return response.data; // Return the habit details
+            const response = await ApiClient.get<HabitDetailsDto>(
+                `${HABITS_BASE_URL}/${habitId}`
+            );
+            return response.data;
         } catch (error) {
-            console.error(`Error fetching habit details for ID ${habitId}:`, error);
+            logError(`Fetching habit details (ID: ${habitId})`, error);
             throw error;
         }
     },
 
     // Create a new habit
     async createHabit(habitData: HabitCreateDto): Promise<string> {
-        try {
-            const response = await ApiClient.post(`${HABITS_BASE_URL}`, habitData);
-            const locationHeader = response.headers['location']; // Get the URI from headers
-            return locationHeader; // Return the Location header (URI of created resource)
-        } catch (error) {
-            console.error('Error creating habit:', error);
-            throw error;
-        }
-    },
+        const transformedData = {
+            ...habitData,
+            habitDays: Array.from(habitData.habitDays), // Convert Set to Array if necessary
+        };
 
-    // Delete a habit by ID
-    async deleteHabit(habitId: string): Promise<void> {
+        console.log('[HabitService] Creating habit with payload:', transformedData);
+
         try {
-            await ApiClient.delete(`${HABITS_BASE_URL}/${habitId}`);
+            const response = await ApiClient.post(`${HABITS_BASE_URL}`, transformedData);
+            const locationHeader = response.headers['location'];
+            console.log('[HabitService] Habit created successfully. Location:', locationHeader);
+            return locationHeader;
         } catch (error) {
-            console.error(`Error deleting habit with ID ${habitId}:`, error);
+            logError('Creating habit', error, JSON.stringify(transformedData));
             throw error;
         }
     },
 
     // Modify an existing habit
-    async modifyHabit(habitId: string, habitData: HabitModifyDto): Promise<HabitDetailsDto> {
+    async modifyHabit(
+        habitId: string,
+        habitData: Partial<HabitModifyDto>
+    ): Promise<HabitDetailsDto> {
+        const transformedData = {
+            ...habitData,
+            habitDays: habitData.habitDays ? Array.from(habitData.habitDays) : undefined,
+        };
+
+        console.log('[HabitService] Modifying habit with payload:', transformedData);
+
         try {
-            const response = await ApiClient.put<HabitDetailsDto>(
+            const response = await ApiClient.patch<HabitDetailsDto>(
                 `${HABITS_BASE_URL}/${habitId}`,
-                habitData
+                transformedData
             );
+            console.log('[HabitService] Habit modified successfully (ID:', habitId, ')');
             return response.data;
         } catch (error) {
-            console.error(`Error modifying habit with ID ${habitId}:`, error);
+            logError(`Modifying habit (ID: ${habitId})`, error, JSON.stringify(transformedData));
+            throw error;
+        }
+    },
+
+    // Delete a habit
+    async deleteHabit(habitId: string): Promise<void> {
+        try {
+            await ApiClient.delete(`${HABITS_BASE_URL}/${habitId}`);
+            console.log(`[HabitService] Habit deleted successfully (ID: ${habitId})`);
+        } catch (error) {
+            logError(`Deleting habit (ID: ${habitId})`, error);
             throw error;
         }
     },

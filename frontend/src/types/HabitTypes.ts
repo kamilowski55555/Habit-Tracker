@@ -4,6 +4,7 @@ export interface HabitListDto {
     name: string;            // Habit name
     type: 'GOOD' | 'BAD';    // Habit type (enum as string)
     targetValue: number;     // Target value for success
+    habitDays: string[];     // Days of the week
     currencyAmount: number;  // Coins rewarded or deducted
     icon?: string;           // Optional icon (emoji or URL)
 }
