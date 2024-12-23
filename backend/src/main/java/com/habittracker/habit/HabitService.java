@@ -32,6 +32,7 @@ public class HabitService {
                         .name(habit.getName())
                         .type(habit.getType())
                         .targetValue(habit.getTargetValue())
+                        .habitDays(habit.getHabitDays())
                         .currencyAmount(habit.getCurrencyAmount())
                         .icon(habit.getIcon())
                         .build())

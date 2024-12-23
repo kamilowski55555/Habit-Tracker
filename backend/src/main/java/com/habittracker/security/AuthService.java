@@ -5,7 +5,6 @@ import com.habittracker.common.exception.UserNotFoundException;
 import com.habittracker.security.dto.LoginRequest;
 import com.habittracker.user.User;
 import com.habittracker.user.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

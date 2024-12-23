@@ -43,13 +43,13 @@ public class UserService implements UserDetailsService {
     public UserDetailsDto getUserDetails(UUID id) {
         User user = getUserById(id);
         return UserDetailsDto.builder()
-                        .id(user.getId())
-                        .email(user.getEmail())
-                        .firstName(user.getFirstName())
-                        .lastName(user.getLastName())
-                        .createdAt(user.getCreatedAt())
-                        .modifiedAt(user.getModifiedAt())
-                        .build();
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .createdAt(user.getCreatedAt())
+                .modifiedAt(user.getModifiedAt())
+                .build();
     }
 
     public User getUserById(UUID userId) {

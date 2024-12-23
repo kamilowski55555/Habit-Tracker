@@ -3,7 +3,6 @@ package com.habittracker.security;
 import com.habittracker.security.dto.LoginRequest;
 import com.habittracker.security.dto.LogoutResponse;
 import com.habittracker.security.dto.TokenResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
