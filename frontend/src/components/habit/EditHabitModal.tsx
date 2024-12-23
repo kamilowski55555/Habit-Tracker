@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem } from '@mui/material';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    MenuItem,
+} from '@mui/material';
+import DaySelector, { mapToBackendDays, mapToFrontendDays } from './DaySelector'; // Import DaySelector and mapping functions
 import { HabitListDto, HabitCreateDto } from '../../types';
 
 interface EditHabitModalProps {
     open: boolean;
-    habit: HabitListDto;
+    habit: HabitListDto; // The habit to edit
     onClose: () => void;
-    onSubmit: (habitData: HabitCreateDto) => void;
+    onSubmit: (habitData: HabitCreateDto) => void; // Callback for saving changes
 }
 
 const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, onSubmit }) => {
@@ -19,19 +28,21 @@ const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, o
         icon: '',
     });
 
+    // Populate the form with the habit data when the modal opens
     useEffect(() => {
         if (habit) {
             setFormData({
                 name: habit.name,
                 type: habit.type,
                 targetValue: habit.targetValue,
-                habitDays: habit.habitDays,
+                habitDays: mapToFrontendDays(habit.habitDays), // Convert backend days to frontend format
                 currencyAmount: habit.currencyAmount,
                 icon: habit.icon,
             });
         }
     }, [habit]);
 
+    // Handle input changes for text and numeric fields
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({
@@ -40,8 +51,13 @@ const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, o
         });
     };
 
+    // Handle submission of the form
     const handleSubmit = () => {
-        onSubmit(formData);
+        const backendData = {
+            ...formData,
+            habitDays: mapToBackendDays(formData.habitDays), // Convert frontend days to backend format
+        };
+        onSubmit(backendData); // Pass processed data to parent
     };
 
     return (
@@ -73,7 +89,7 @@ const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, o
                 <TextField
                     label="Target Value"
                     name="targetValue"
-                    value={formData.targetValue}
+                    value={formData.targetValue || ''}
                     onChange={handleChange}
                     type="number"
                     fullWidth
@@ -83,25 +99,15 @@ const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, o
                 <TextField
                     label="Reward (Currency Amount)"
                     name="currencyAmount"
-                    value={formData.currencyAmount}
+                    value={formData.currencyAmount || ''}
                     onChange={handleChange}
                     type="number"
                     fullWidth
                     margin="normal"
-                    required
                 />
-                <TextField
-                    label="Habit Days (comma-separated)"
-                    name="habitDays"
-                    value={formData.habitDays.join(', ')}
-                    onChange={(e) =>
-                        setFormData({
-                            ...formData,
-                            habitDays: e.target.value.split(',').map((day) => day.trim()),
-                        })
-                    }
-                    fullWidth
-                    margin="normal"
+                <DaySelector
+                    selectedDays={formData.habitDays} // Pass current habitDays in frontend format
+                    onChange={(days) => setFormData({ ...formData, habitDays: days })} // Update state
                 />
                 <TextField
                     label="Icon (Emoji)"

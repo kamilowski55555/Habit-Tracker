@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, MenuItem } from '@mui/material';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    MenuItem,
+} from '@mui/material';
+import DaySelector, { mapToBackendDays } from './DaySelector'; // Import DaySelector
 import { HabitCreateDto } from '../../types';
 
 interface CreateHabitModalProps {
@@ -18,6 +27,7 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
         icon: '',
     });
 
+    // Handle input changes for text and number fields
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({
@@ -26,8 +36,18 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
         });
     };
 
+    // Handle submission of the form
     const handleSubmit = () => {
-        onSubmit(formData); // Send form data to parent
+        const backendData = {
+            ...formData,
+            habitDays: mapToBackendDays(formData.habitDays), // Convert to backend format
+        };
+        onSubmit(backendData); // Pass processed data to parent
+        resetForm(); // Reset the form for future use
+    };
+
+    // Reset the form state
+    const resetForm = () => {
         setFormData({
             name: '',
             type: 'GOOD',
@@ -35,7 +55,7 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
             habitDays: [],
             currencyAmount: 0,
             icon: '',
-        }); // Reset form for next use
+        });
     };
 
     return (
@@ -67,7 +87,7 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
                 <TextField
                     label="Target Value"
                     name="targetValue"
-                    value={formData.targetValue}
+                    value={formData.targetValue || ''}
                     onChange={handleChange}
                     type="number"
                     fullWidth
@@ -77,25 +97,15 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
                 <TextField
                     label="Reward (Currency Amount)"
                     name="currencyAmount"
-                    value={formData.currencyAmount}
+                    value={formData.currencyAmount || ''}
                     onChange={handleChange}
                     type="number"
                     fullWidth
                     margin="normal"
-                    required
                 />
-                <TextField
-                    label="Habit Days (comma-separated)"
-                    name="habitDays"
-                    value={formData.habitDays.join(', ')}
-                    onChange={(e) =>
-                        setFormData({
-                            ...formData,
-                            habitDays: e.target.value.split(',').map((day) => day.trim()),
-                        })
-                    }
-                    fullWidth
-                    margin="normal"
+                <DaySelector
+                    selectedDays={formData.habitDays} // Pass current state
+                    onChange={(days) => setFormData({ ...formData, habitDays: days })} // Update state
                 />
                 <TextField
                     label="Icon (Emoji)"
