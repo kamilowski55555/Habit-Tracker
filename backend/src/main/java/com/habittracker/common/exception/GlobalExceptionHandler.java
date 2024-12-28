@@ -1,6 +1,7 @@
 package com.habittracker.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,12 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final Logger log;
+
+    public GlobalExceptionHandler(Logger log) {
+        this.log = log;
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -37,7 +44,7 @@ public class GlobalExceptionHandler {
     // Przykład obsługi innych wyjątków
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
-
+        log.error(ex);
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")

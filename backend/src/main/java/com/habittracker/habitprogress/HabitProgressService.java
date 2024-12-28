@@ -1,70 +1,83 @@
-//package com.habittracker.habitprogress;
-//
-//import com.habittracker.habit.Habit;
-//import com.habittracker.habit.HabitRepository;
-//import com.habittracker.habit.HabitType;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//
-//import java.time.LocalDate;
-//import java.util.List;
-//import java.util.UUID;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class HabitProgressService {
-//
-//    private final HabitProgressRepository habitProgressRepository;
-//    private final HabitRepository habitRepository;
-//
-//    public List<HabitProgress> getProgressByHabit(UUID habitId) {
-//        return habitProgressRepository.findByHabitId(habitId);
-//    }
-//
-//    public HabitProgress getProgressForToday(UUID habitId) {
-//        LocalDate today = LocalDate.now();
-//        return habitProgressRepository.findByHabitIdAndDate(habitId, today);
-//    }
-//
-//    public HabitProgress logProgress(UUID habitId, int incrementValue) {
-//        Habit habit = habitRepository.findById(habitId)
-//                .orElseThrow(() -> new IllegalArgumentException("Habit not found"));
-//
-//        LocalDate today = LocalDate.now();
-//        HabitProgress progress = habitProgressRepository.findByHabitIdAndDate(habitId, today);
-//
-//        // Create a new progress entry if one doesn't exist for today
-//        if (progress == null) {
-//            progress = HabitProgress.builder()
-//                    .habit(habit)
-//                    .date(today)
-//                    .targetValue(habit.getTargetValue()) // Use the target value from the habit
-//                    .currentValue(0) // Start with zero progress
-//                    .status(ProgressStatus.PENDING) // Default status
-//                    .currencyEarned(0)
-//                    .build();
-//        }
-//
-//        // Update progress
-//        progress.setCurrentValue(progress.getCurrentValue() + incrementValue);
-//
-//        // Evaluate status based on habit type
-//        if (habit.getType() == HabitType.GOOD) {
-//            if (progress.getCurrentValue() >= progress.getTargetValue()) {
-//                progress.setStatus(ProgressStatus.SUCCESS);
-//                progress.setCurrencyEarned(habit.getRewardAmount());
-//            } else {
-//                progress.setStatus(ProgressStatus.PENDING); // Not yet a failure
-//            }
-//        } else if (habit.getType() == HabitType.BAD) {
-//            if (progress.getCurrentValue() < progress.getTargetValue()) {
-//                progress.setStatus(ProgressStatus.SUCCESS);
-//                progress.setCurrencyEarned(habit.getRewardAmount());
-//            } else {
-//                progress.setStatus(ProgressStatus.FAILURE);
-//            }
-//        }
-//
-//        return habitProgressRepository.save(progress);
-//    }
-//}
+package com.habittracker.habitprogress;
+
+import com.habittracker.habit.Habit;
+import com.habittracker.habit.HabitType;
+import com.habittracker.habitprogress.dto.HabitProgressListDto;
+import com.habittracker.habitprogress.dto.HabitProgressModifyDto;
+import com.habittracker.user.User;
+import com.habittracker.user.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class HabitProgressService {
+
+    private final HabitProgressRepository habitProgressRepository;
+    private final UserRepository userRepository;
+
+    public List<HabitProgressListDto> getProgressListForDate(UUID currentUserId, LocalDate date) {
+        return habitProgressRepository.findByHabitUserIdAndDate(currentUserId, date)
+                .stream()
+                .map(habitProgress -> HabitProgressListDto.builder()
+                        .id(habitProgress.getId())
+                        .name(habitProgress.getHabit().getName())
+                        .date(habitProgress.getDate())
+                        .targetValue(habitProgress.getTargetValue())
+                        .currentValue(habitProgress.getCurrentValue())
+                        .build())
+                .toList();
+    }
+
+    @Transactional
+    public void updateProgress(UUID userId, UUID progressId, HabitProgressModifyDto dto) {
+        // Fetch record ensuring it belongs to this user
+        HabitProgress habitProgress = habitProgressRepository
+                .findByIdAndHabitUserId(progressId, userId)
+                .orElseThrow(() -> new RuntimeException("Not found or not yours"));
+
+        int oldValue = habitProgress.getCurrentValue();
+        int targetValue = habitProgress.getTargetValue();
+        int newValue = dto.getCurrentValue();
+
+        // Guard clause if no change
+        if (newValue == oldValue) {
+            return;
+        }
+
+        // Guard clause if exceeding target
+        if (newValue > targetValue) {
+            throw new RuntimeException("Current value exceeds target");
+        }
+
+        // If it's a GOOD habit, adjust the user's currency if needed
+        if (habitProgress.getHabit().getType() == HabitType.GOOD) {
+            adjustCurrency(habitProgress, oldValue, newValue);
+            userRepository.save(habitProgress.getUser()); // Save updated user balance
+        }
+
+        habitProgress.setCurrentValue(newValue);
+        habitProgressRepository.save(habitProgress);
+    }
+
+    private void adjustCurrency(HabitProgress progress, int oldValue, int newValue) {
+        User user = progress.getUser();
+        Habit habit = progress.getHabit();
+        int target = progress.getTargetValue();
+
+        boolean wasComplete = (oldValue == target);
+        boolean isComplete = (newValue == target);
+
+        if (wasComplete && !isComplete) {
+            user.setCurrencyBalance(user.getCurrencyBalance() - habit.getCurrencyAmount());
+        } else if (!wasComplete && isComplete) {
+            user.setCurrencyBalance(user.getCurrencyBalance() + habit.getCurrencyAmount());
+        }
+    }
+
+}

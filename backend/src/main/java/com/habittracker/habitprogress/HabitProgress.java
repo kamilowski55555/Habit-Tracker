@@ -1,25 +1,29 @@
 package com.habittracker.habitprogress;
 
 import com.habittracker.habit.Habit;
+import com.habittracker.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -28,7 +32,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "habit_progress")
+@EntityListeners(AuditingEntityListener.class)
+@Table(
+        name = "habit_progress",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"habit_id", "date"})
+        }
+)
 public class HabitProgress {
 
     @Id
@@ -39,26 +49,27 @@ public class HabitProgress {
     @JoinColumn(name = "habit_id", nullable = false)
     private Habit habit;
 
+    // Direct relationship to User if you want quick access to user currency, etc.
+    // (You can remove this if you prefer to go through habit.getUser())
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(nullable = false)
     private LocalDate date; // The date this progress entry is for
 
     @Column(name = "target_value", nullable = false)
-    private int targetValue; // Daily target (e.g., 10,000 steps)
+    private int targetValue; // Daily target (e.g., 8 glasses of water)
 
     @Column(name = "current_value", nullable = false)
     private int currentValue; // Current value achieved
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ProgressStatus status; // SUCCESS, FAILURE, PARTIAL
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "currency_earned", nullable = false)
-    private int currencyEarned; // Virtual currency rewarded
+    @LastModifiedDate
+    @Column(name = "modified_at")
+    private LocalDateTime modifiedAt;
 
-    @PrePersist
-    public void prePersist() {
-        if (status == null) {
-            status = ProgressStatus.PENDING; // Default status
-        }
-    }
 }

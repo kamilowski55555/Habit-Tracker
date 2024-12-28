@@ -5,11 +5,20 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface HabitProgressRepository extends JpaRepository<HabitProgress, UUID> {
-    List<HabitProgress> findByHabitId(UUID habitId); // Find progress for a specific habit
+    List<HabitProgress> findByHabitUserIdAndDate(UUID userId, LocalDate date);
 
-    HabitProgress findByHabitIdAndDate(UUID habitId, LocalDate date); // Find today's progress
+    Optional<HabitProgress> findByIdAndHabitUserId(UUID id, UUID userId);
+
+    Optional<HabitProgress> findByHabitIdAndDate(UUID habitId, LocalDate date);
+
+    void deleteAllByHabitId(UUID habitId);
+
+    List<HabitProgress> findByDate(LocalDate date);
+
+    boolean existsByHabitIdAndDate(UUID id, LocalDate tomorrow);
 }

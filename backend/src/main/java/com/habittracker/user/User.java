@@ -1,5 +1,8 @@
 package com.habittracker.user;
 
+import com.habittracker.habit.Habit;
+import com.habittracker.habitprogress.HabitProgress;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -8,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -39,6 +45,13 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HabitProgress> habitProgress;
+
+    @OneToMany
+    @JoinColumn(name = "habit_id")
+    private List<Habit> habits;
+
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
@@ -54,6 +67,9 @@ public class User implements UserDetails {
 
     @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "currency_balance")
+    private long currencyBalance;
 
     @Column(name = "token_version")
     private UUID tokenVersion; // JWT token version

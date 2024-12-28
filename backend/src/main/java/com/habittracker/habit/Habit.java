@@ -1,6 +1,8 @@
 package com.habittracker.habit;
 
+import com.habittracker.habitprogress.HabitProgress;
 import com.habittracker.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -14,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,6 +50,9 @@ public class Habit {
     @ManyToOne(fetch = FetchType.LAZY) // Link to the User table
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HabitProgress> habitProgress;
 
     @Column(name = "name", nullable = false)
     private String name;
