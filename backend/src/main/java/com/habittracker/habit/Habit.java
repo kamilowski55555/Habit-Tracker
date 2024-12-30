@@ -1,6 +1,6 @@
 package com.habittracker.habit;
 
-import com.habittracker.habitprogress.HabitProgress;
+import com.habittracker.progress.Progress;
 import com.habittracker.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -52,7 +52,7 @@ public class Habit {
     private User user;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HabitProgress> habitProgress;
+    private List<Progress> progresses;
 
     @Column(name = "name", nullable = false)
     private String name;

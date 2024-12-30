@@ -1,9 +1,9 @@
-package com.habittracker.habitprogress;
+package com.habittracker.progress;
 
 import com.habittracker.habit.Habit;
 import com.habittracker.habit.HabitType;
-import com.habittracker.habitprogress.dto.HabitProgressListDto;
-import com.habittracker.habitprogress.dto.HabitProgressModifyDto;
+import com.habittracker.progress.dto.ProgressListDto;
+import com.habittracker.progress.dto.ProgressModifyDto;
 import com.habittracker.user.User;
 import com.habittracker.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -16,33 +16,34 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class HabitProgressService {
+public class ProgressService {
 
-    private final HabitProgressRepository habitProgressRepository;
+    private final ProgressRepository progressRepository;
     private final UserRepository userRepository;
 
-    public List<HabitProgressListDto> getProgressListForDate(UUID currentUserId, LocalDate date) {
-        return habitProgressRepository.findByHabitUserIdAndDate(currentUserId, date)
+    public List<ProgressListDto> getProgressListForDate(UUID currentUserId, LocalDate date) {
+        return progressRepository.findByHabitUserIdAndDate(currentUserId, date)
                 .stream()
-                .map(habitProgress -> HabitProgressListDto.builder()
+                .map(habitProgress -> ProgressListDto.builder()
                         .id(habitProgress.getId())
                         .name(habitProgress.getHabit().getName())
                         .date(habitProgress.getDate())
                         .targetValue(habitProgress.getTargetValue())
                         .currentValue(habitProgress.getCurrentValue())
+                        .habitType(habitProgress.getHabit().getType())
                         .build())
                 .toList();
     }
 
     @Transactional
-    public void updateProgress(UUID userId, UUID progressId, HabitProgressModifyDto dto) {
+    public void updateProgress(UUID userId, UUID progressId, ProgressModifyDto dto) {
         // Fetch record ensuring it belongs to this user
-        HabitProgress habitProgress = habitProgressRepository
+        Progress progress = progressRepository
                 .findByIdAndHabitUserId(progressId, userId)
                 .orElseThrow(() -> new RuntimeException("Not found or not yours"));
 
-        int oldValue = habitProgress.getCurrentValue();
-        int targetValue = habitProgress.getTargetValue();
+        int oldValue = progress.getCurrentValue();
+        int targetValue = progress.getTargetValue();
         int newValue = dto.getCurrentValue();
 
         // Guard clause if no change
@@ -56,16 +57,16 @@ public class HabitProgressService {
         }
 
         // If it's a GOOD habit, adjust the user's currency if needed
-        if (habitProgress.getHabit().getType() == HabitType.GOOD) {
-            adjustCurrency(habitProgress, oldValue, newValue);
-            userRepository.save(habitProgress.getUser()); // Save updated user balance
+        if (progress.getHabit().getType() == HabitType.GOOD) {
+            adjustCurrency(progress, oldValue, newValue);
+            userRepository.save(progress.getUser()); // Save updated user balance
         }
 
-        habitProgress.setCurrentValue(newValue);
-        habitProgressRepository.save(habitProgress);
+        progress.setCurrentValue(newValue);
+        progressRepository.save(progress);
     }
 
-    private void adjustCurrency(HabitProgress progress, int oldValue, int newValue) {
+    private void adjustCurrency(Progress progress, int oldValue, int newValue) {
         User user = progress.getUser();
         Habit habit = progress.getHabit();
         int target = progress.getTargetValue();

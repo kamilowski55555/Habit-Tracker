@@ -5,8 +5,8 @@ import com.habittracker.habit.dto.HabitCreateDto;
 import com.habittracker.habit.dto.HabitDetailsDto;
 import com.habittracker.habit.dto.HabitListDto;
 import com.habittracker.habit.dto.HabitModifyDto;
-import com.habittracker.habitprogress.HabitProgress;
-import com.habittracker.habitprogress.HabitProgressRepository;
+import com.habittracker.progress.Progress;
+import com.habittracker.progress.ProgressRepository;
 import com.habittracker.user.User;
 import com.habittracker.user.UserService;
 import jakarta.transaction.Transactional;
@@ -25,7 +25,7 @@ public class HabitService {
 
     private final HabitRepository habitRepository;
     private final UserService userService;
-    private final HabitProgressRepository habitProgressRepository;
+    private final ProgressRepository progressRepository;
 
     public List<HabitListDto> getUserHabits() {
 
@@ -84,16 +84,16 @@ public class HabitService {
                 .currencyAmount(habitCreateDto.getCurrencyAmount())
                 .icon(habitCreateDto.getIcon())
                 .build();
-        // If today’s day of week matches the newly created habit’s schedule, create a HabitProgress record
+        // If today’s day of week matches the newly created habit’s schedule, create a Progress record
         if (habit.getHabitDays().contains(LocalDate.now().getDayOfWeek())) {
-            HabitProgress progress = HabitProgress.builder()
+            Progress progress = Progress.builder()
                     .habit(habit)
                     .user(user)
                     .date(LocalDate.now())
                     .targetValue(habit.getTargetValue())
                     .currentValue(0)
                     .build();
-            habitProgressRepository.save(progress);
+            progressRepository.save(progress);
         }
         // Save and return ID
         return habitRepository.save(habit).getId();
@@ -134,22 +134,22 @@ public class HabitService {
         }
 
         if (habit.getHabitDays().contains(LocalDate.now().getDayOfWeek()) && targetChanged) {
-            Optional<HabitProgress> maybeProgress = habitProgressRepository
+            Optional<Progress> maybeProgress = progressRepository
                     .findByHabitIdAndDate(habit.getId(), LocalDate.now());
             if (maybeProgress.isPresent()) {
-                HabitProgress progress = maybeProgress.get();
+                Progress progress = maybeProgress.get();
                 progress.setTargetValue(habit.getTargetValue());
                 progress.setCurrentValue(0);
-                habitProgressRepository.save(progress);
+                progressRepository.save(progress);
             } else {
-                HabitProgress progress = HabitProgress.builder()
+                Progress progress = Progress.builder()
                         .habit(habit)
                         .user(habit.getUser())
                         .date(LocalDate.now())
                         .targetValue(habit.getTargetValue())
                         .currentValue(0)
                         .build();
-                habitProgressRepository.save(progress);
+                progressRepository.save(progress);
             }
         }
 
@@ -166,7 +166,7 @@ public class HabitService {
         if (!habit.getUser().getId().equals(currentUserId)) {
             throw new SecurityException("You do not have permission to access this resource.");
         }
-        habitProgressRepository.deleteAllByHabitId(habitId);
+        progressRepository.deleteAllByHabitId(habitId);
         habitRepository.deleteById(habitId);
     }
 }

@@ -1,4 +1,4 @@
-package com.habittracker.habitprogress;
+package com.habittracker.progress;
 
 import com.habittracker.habit.Habit;
 import com.habittracker.habit.HabitRepository;
@@ -22,7 +22,7 @@ import java.util.List;
 public class DailySchedulerService {
 
     private final HabitRepository habitRepository;
-    private final HabitProgressRepository habitProgressRepository;
+    private final ProgressRepository progressRepository;
     private final UserRepository userRepository;
     private final Logger log;
 
@@ -30,22 +30,22 @@ public class DailySchedulerService {
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void handleDailyProgress() {
-        log.info("Starting daily habit progress task.");
+        log.info("Starting daily progress task.");
         try {
             finalizeToday(LocalDate.now().minusDays(1));
             initializeTomorrow(LocalDate.now());
-            log.info("Daily habit progress task completed successfully.");
+            log.info("Daily progress task completed successfully.");
         } catch (Exception ex) {
-            log.error("Error while handling daily habit progress: ", ex);
+            log.error("Error while handling daily progress: ", ex);
         }
     }
 
     private void finalizeToday(LocalDate yesterday) {
-        List<HabitProgress> yesterdaysEntries =
-                habitProgressRepository.findByDate(yesterday);
+        List<Progress> yesterdaysEntries =
+                progressRepository.findByDate(yesterday);
         // Do something if needed: awarding currency, marking status, etc.
 
-        for (HabitProgress hp : yesterdaysEntries) {
+        for (Progress hp : yesterdaysEntries) {
             Habit habit = hp.getHabit();
             if (habit.getType() == HabitType.BAD) {
                 // Example rule: if currentValue < targetValue => user gains currency
@@ -65,17 +65,17 @@ public class DailySchedulerService {
 
         // For each, if no progress record for tomorrow, create one
         for (Habit habit : tomorrowHabits) {
-            boolean exists = habitProgressRepository
+            boolean exists = progressRepository
                     .existsByHabitIdAndDate(habit.getId(), tomorrow);
             if (!exists) {
-                HabitProgress progress = HabitProgress.builder()
+                Progress progress = Progress.builder()
                         .habit(habit)
                         .user(habit.getUser())
                         .date(tomorrow)
                         .targetValue(habit.getTargetValue())
                         .currentValue(0)
                         .build();
-                habitProgressRepository.save(progress);
+                progressRepository.save(progress);
             }
         }
     }

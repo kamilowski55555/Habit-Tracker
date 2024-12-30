@@ -1,4 +1,4 @@
-package com.habittracker.habitprogress;
+package com.habittracker.progress;
 
 import com.habittracker.habit.Habit;
 import com.habittracker.user.User;
@@ -34,12 +34,12 @@ import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(
-        name = "habit_progress",
+        name = "progress",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"habit_id", "date"})
         }
 )
-public class HabitProgress {
+public class Progress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
