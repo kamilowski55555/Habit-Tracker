@@ -15,5 +15,5 @@ public class ProgressListDto {
     private LocalDate date;
     private int targetValue;
     private int currentValue;
-    private HabitType habitType;
+    private HabitType type;
 }

@@ -1,35 +1,69 @@
-import {Box, Card, CardContent, Grid, Typography} from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import { Box, CircularProgress, Typography, Alert } from '@mui/material';
+import ProgressList from '../components/progress/ProgressList';
+import ProgressService from '../services/ProgressService';
+import { ProgressListDto } from '../types/ProgressTypes';
 
-const HomePage = () => {
-    const handleLogout = () => {
-        localStorage.removeItem('token'); // Clear token
-        window.location.href = '/login'; // Redirect to login
+const HomePage: React.FC = () => {
+    const [progressData, setProgressData] = useState<ProgressListDto[]>([]); // Store progress data
+    const [loading, setLoading] = useState<boolean>(true); // Show loading spinner
+    const [error, setError] = useState<string | null>(null); // Handle errors
+
+    // Fetch progress data from the backend
+    const fetchProgress = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await ProgressService.getProgress();
+            setProgressData(data);
+        } catch (error) {
+            console.error('Error fetching progress data:', error);
+            setError('Failed to load progress data. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
     };
+
+    // Update progress for a specific habit
+    const updateProgress = async (id: string, updatedValue: number) => {
+        try {
+            await ProgressService.updateProgress(id, { currentValue: updatedValue });
+            // Update local state to reflect the change
+            setProgressData((prevData) =>
+                prevData.map((progress) =>
+                    progress.id === id
+                        ? { ...progress, currentValue: updatedValue }
+                        : progress
+                )
+            );
+        } catch (error) {
+            console.error(`Error updating progress for habit ID: ${id}`, error);
+            setError('Failed to update progress. Please try again.');
+        }
+    };
+
+    // Fetch progress data on component mount
+    useEffect(() => {
+        fetchProgress();
+    }, []);
+
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>
-                Welcome Back, John!
+                Your Habit Progress
             </Typography>
 
-            <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} md={4}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6">Habits Completed</Typography>
-                            <Typography variant="h4">5</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
+            {/* Error Message */}
+            {error && <Alert severity="error">{error}</Alert>}
 
-                <Grid item xs={12} sm={6} md={4}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6">Coins Earned</Typography>
-                            <Typography variant="h4">1000</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+            {/* Loading Spinner */}
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 5 }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <ProgressList progressData={progressData} onUpdate={updateProgress} />
+            )}
         </Box>
     );
 };

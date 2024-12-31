@@ -1,4 +1,5 @@
 import ApiClient from '../utils/api'; // Centralized Axios instance
+import logError from '../utils/logError';
 import {
     HabitCreateDto,
     HabitDetailsDto,
@@ -7,18 +8,6 @@ import {
 } from '../types';
 
 const HABITS_BASE_URL = '/habits';
-
-// Helper function for error handling and logging
-const logError = (action: string, error: any, extraInfo?: string) => {
-    const status = error?.response?.status || 'Unknown';
-    const message = error?.response?.data || error.message || 'No additional error details';
-    console.error(`[HabitService] ${action} failed.`, {
-        status,
-        message,
-        extraInfo,
-        fullError: error,
-    });
-};
 
 const HabitService = {
     // Fetch the list of habits

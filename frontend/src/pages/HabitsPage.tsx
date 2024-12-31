@@ -101,9 +101,9 @@ const HabitsPage: React.FC = () => {
             {/* Modal for editing habits */}
             {editingHabit && (
                 <EditHabitModal
-                    open={!!editingHabit}
+                    open={!!editingHabit}  // Ensures the modal visibility aligns with editingHabit's existence
                     onClose={() => setEditingHabit(null)}
-                    habit={editingHabit}
+                    habit={editingHabit} // Passes the habit to pre-fill the form
                     onSubmit={(habitData) => handleEditHabit(editingHabit.id, habitData)}
                 />
             )}

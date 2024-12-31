@@ -30,7 +30,7 @@ public class ProgressService {
                         .date(habitProgress.getDate())
                         .targetValue(habitProgress.getTargetValue())
                         .currentValue(habitProgress.getCurrentValue())
-                        .habitType(habitProgress.getHabit().getType())
+                        .type(habitProgress.getHabit().getType())
                         .build())
                 .toList();
     }
