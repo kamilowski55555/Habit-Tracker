@@ -1,5 +1,6 @@
 package com.habittracker.habit;
 
+import com.habittracker.common.exception.ResourceAccessDeniedException;
 import com.habittracker.common.util.SecurityContextUtils;
 import com.habittracker.habit.dto.HabitCreateDto;
 import com.habittracker.habit.dto.HabitDetailsDto;
@@ -53,7 +54,7 @@ public class HabitService {
         // Validate user access
         UUID currentUserId = SecurityContextUtils.getCurrentUserId();
         if (!habit.getUser().getId().equals(currentUserId)) {
-            throw new SecurityException("You do not have permission to access this resource.");
+            throw new ResourceAccessDeniedException("You do not have permission to access this resource.");
         }
 
         return HabitDetailsDto.builder()
@@ -108,7 +109,7 @@ public class HabitService {
         // Check ownership
         UUID currentUserId = SecurityContextUtils.getCurrentUserId();
         if (!habit.getUser().getId().equals(currentUserId)) {
-            throw new SecurityException("You do not have permission to access this resource.");
+            throw new ResourceAccessDeniedException("You do not have permission to access this resource.");
         }
 
         boolean targetChanged = false;
@@ -164,7 +165,7 @@ public class HabitService {
 
         UUID currentUserId = SecurityContextUtils.getCurrentUserId();
         if (!habit.getUser().getId().equals(currentUserId)) {
-            throw new SecurityException("You do not have permission to access this resource.");
+            throw new ResourceAccessDeniedException("You do not have permission to access this resource.");
         }
         progressRepository.deleteAllByHabitId(habitId);
         habitRepository.deleteById(habitId);
