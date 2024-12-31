@@ -1,5 +1,6 @@
 package com.habittracker.user;
 
+import com.habittracker.common.util.SecurityContextUtils;
 import com.habittracker.user.dto.UserDetailsDto;
 import com.habittracker.user.dto.UserListDto;
 import com.habittracker.user.dto.UserRegisterDto;
@@ -39,7 +40,8 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDetailsDto> getUserDetails(@PathVariable UUID userId) {
-        UserDetailsDto userDetailsDto = userService.getUserDetails(userId);
+        UUID currentUserId = SecurityContextUtils.getCurrentUserId();
+        UserDetailsDto userDetailsDto = userService.getUserDetails(currentUserId, userId);
         return ResponseEntity.ok(userDetailsDto);
     }
 

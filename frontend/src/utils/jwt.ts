@@ -15,6 +15,22 @@ export const parseJwt = (token: string) => {
     }
 };
 
+export const getUserIdFromToken = (): string | null => {
+    const token = getToken(); // Retrieve the JWT token from localStorage
+    if (!token) {
+        console.error('No token found');
+        return null;
+    }
+
+    const payload = parseJwt(token); // Decode the JWT token
+    if (!payload || !payload.sub) {
+        console.error('Invalid token payload or missing "sub" field');
+        return null;
+    }
+
+    return payload.sub; // Return the user ID (stored in "sub")
+};
+
 export const isTokenExpired = (token: string) => {
     const payload = parseJwt(token);
     if (!payload || !payload.exp) {

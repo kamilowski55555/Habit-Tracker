@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'; // Add MUI essentials
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
+import { UserProvider } from './context/UserContext';
 
 // 1. Create an MUI theme
 const theme = createTheme({
@@ -27,7 +28,9 @@ root.render(
         <ThemeProvider theme={theme}>
             <CssBaseline /> {/* Resets default browser styles */}
             <AuthProvider>
-                <App />
+                <UserProvider> {/* Wrap the app with UserProvider */}
+                    <App />
+                </UserProvider>
             </AuthProvider>
         </ThemeProvider>
     </React.StrictMode>

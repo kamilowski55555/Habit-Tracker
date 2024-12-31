@@ -3,11 +3,13 @@ import { Box, CircularProgress, Typography, Alert } from '@mui/material';
 import ProgressList from '../components/progress/ProgressList';
 import ProgressService from '../services/ProgressService';
 import { ProgressListDto } from '../types/ProgressTypes';
+import { useUser } from '../context/UserContext'; // Import useUser hook
 
 const HomePage: React.FC = () => {
     const [progressData, setProgressData] = useState<ProgressListDto[]>([]); // Store progress data
     const [loading, setLoading] = useState<boolean>(true); // Show loading spinner
     const [error, setError] = useState<string | null>(null); // Handle errors
+    const { refreshUser } = useUser(); // Access the refreshUser function from context
 
     // Fetch progress data from the backend
     const fetchProgress = async () => {
@@ -36,6 +38,7 @@ const HomePage: React.FC = () => {
                         : progress
                 )
             );
+            await refreshUser()
         } catch (error) {
             console.error(`Error updating progress for habit ID: ${id}`, error);
             setError('Failed to update progress. Please try again.');

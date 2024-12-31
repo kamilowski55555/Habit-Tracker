@@ -40,13 +40,18 @@ public class UserService implements UserDetailsService {
                 .build());
     }
 
-    public UserDetailsDto getUserDetails(UUID id) {
+    public UserDetailsDto getUserDetails(UUID currentUserId, UUID id) {
         User user = getUserById(id);
+        if (!user.getId().equals(currentUserId)) {
+            throw new SecurityException("You do not have permission to access this resource.");
+        }
         return UserDetailsDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .notificationsEnabled(user.isNotificationsEnabled())
+                .currencyBalance(user.getCurrencyBalance())
                 .createdAt(user.getCreatedAt())
                 .modifiedAt(user.getModifiedAt())
                 .build();

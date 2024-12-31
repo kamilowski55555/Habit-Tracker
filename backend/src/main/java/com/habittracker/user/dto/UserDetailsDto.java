@@ -11,12 +11,12 @@ import java.util.UUID;
 @Setter
 @Builder
 public class UserDetailsDto {
-
     private UUID id;
     private String email;
     private String firstName;
     private String lastName;
+    private long currencyBalance;
+    private boolean notificationsEnabled;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-
 }

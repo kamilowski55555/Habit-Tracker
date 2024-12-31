@@ -1,11 +1,13 @@
 // types/UserTypes.ts
-export interface UserDto {
-    id: string;             // UUID
-    email: string;          // Email address
-    firstName: string;      // First name
-    lastName: string;       // Last name
-    createdAt: string;      // ISO timestamp
-    updatedAt?: string;     // ISO timestamp (optional)
+export interface UserDetailsDto {
+    id: string; // UUID as a string
+    email: string;
+    firstName: string;
+    lastName: string;
+    currencyBalance: number; // Long in Java maps to number in TypeScript
+    notificationsEnabled: boolean;
+    createdAt: string; // LocalDateTime as ISO string
+    modifiedAt: string; // LocalDateTime as ISO string
 }
 
 export interface LoginPayload {
