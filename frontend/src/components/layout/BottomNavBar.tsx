@@ -2,8 +2,8 @@
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import SearchIcon from '@mui/icons-material/Search';
+import RedeemIcon from '@mui/icons-material/Redeem';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const BottomNavBar = () => {
@@ -11,7 +11,7 @@ const BottomNavBar = () => {
     const location = useLocation(); // Get the current URL path
 
     // Map routes to navigation values
-    const routes = ['home', 'habits', 'extras', 'explore'];
+    const routes = ['home', 'habits', 'rewards', 'explore'];
 
     // Derive the active tab based on the current URL path
     const currentTab = routes.findIndex((route) => location.pathname.includes(route));
@@ -35,7 +35,7 @@ const BottomNavBar = () => {
         >
             <BottomNavigationAction label="Home" icon={<HomeIcon />} />
             <BottomNavigationAction label="Habits" icon={<StarIcon />} />
-            <BottomNavigationAction label="Extras" icon={<SportsEsportsIcon />} />
+            <BottomNavigationAction label="Rewards" icon={<RedeemIcon />} />
             <BottomNavigationAction label="Explore" icon={<SearchIcon />} />
         </BottomNavigation>
     );

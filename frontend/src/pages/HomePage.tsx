@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
                         : progress
                 )
             );
-            await refreshUser()
+            await refreshUser();
         } catch (error) {
             console.error(`Error updating progress for habit ID: ${id}`, error);
             setError('Failed to update progress. Please try again.');
@@ -53,7 +53,7 @@ const HomePage: React.FC = () => {
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>
-                Your Habit Progress
+                Your Progress
             </Typography>
 
             {/* Error Message */}

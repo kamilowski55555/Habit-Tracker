@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import HabitsPage from './pages/HabitsPage';
-import ExtrasPage from './pages/ExtrasPage';
-import ExplorePage from './pages/ExplorePage';
+import RewardsPage from './pages/RewardsPage';
+import ArticlesPage from './pages/ArticlesPage.tsx';
 import ProtectedRoute from "./components/layout/ProtectedRoute.tsx";
 import RegisterPage from "./pages/RegisterPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
@@ -30,8 +30,8 @@ const App = () => {
                     {/* Nested child routes */}
                     <Route path="home" element={<HomePage />} />
                     <Route path="habits" element={<HabitsPage />} />
-                    <Route path="extras" element={<ExtrasPage />} />
-                    <Route path="explore" element={<ExplorePage />} />
+                    <Route path="rewards" element={<RewardsPage />} />
+                    <Route path="explore" element={<ArticlesPage />} />
                 </Route>
 
                 {/* Catch-All Redirect */}
