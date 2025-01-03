@@ -1,6 +1,7 @@
 package com.habittracker.user;
 
 import com.habittracker.common.exception.UserNotFoundException;
+import com.habittracker.user.dto.NotificationEnableRequest;
 import com.habittracker.user.dto.UserDetailsDto;
 import com.habittracker.user.dto.UserRegisterDto;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.UUID;
+
+import static com.habittracker.common.util.SecurityContextUtils.getCurrentUserId;
+import static com.habittracker.common.util.SecurityContextUtils.verifyResourceOwnership;
 
 @Service
 @RequiredArgsConstructor
@@ -36,25 +41,56 @@ public class UserService implements UserDetailsService {
                 .firstName(userDTO.getFirstName())
                 .lastName(userDTO.getLastName())
                 .role(Role.ROLE_USER)
+                .notificationsEnabled(true)
                 .tokenVersion(UUID.randomUUID())
                 .build());
     }
 
-    public UserDetailsDto getUserDetails(UUID currentUserId, UUID id) {
-        User user = getUserById(id);
-        if (!user.getId().equals(currentUserId)) {
-            throw new SecurityException("You do not have permission to access this resource.");
-        }
+    public UserDetailsDto getUserDetails(UUID userId) {
+        verifyResourceOwnership(userId);
+        User user = getUserById(userId);
         return UserDetailsDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .notificationsEnabled(user.isNotificationsEnabled())
+                .notificationTimes(user.getNotificationTimes())
                 .currencyBalance(user.getCurrencyBalance())
                 .createdAt(user.getCreatedAt())
                 .modifiedAt(user.getModifiedAt())
                 .build();
+    }
+
+    public void addNotificationTime(UUID userId, LocalTime time) {
+        verifyResourceOwnership(userId);
+        User user = getUserById(userId);
+
+        if (user.getNotificationTimes().size() >= 3) {
+            throw new RuntimeException("Maximum of 3 notification times allowed");
+        }
+
+        user.getNotificationTimes().add(time);
+        userRepository.save(user);
+    }
+
+    // 3) Remove a time
+    public void removeNotificationTime(UUID userId, LocalTime time) {
+        verifyResourceOwnership(userId);
+        User user = getUserById(userId);
+
+
+        user.getNotificationTimes().remove(time);
+        userRepository.save(user);
+    }
+
+    // 4) Toggle notificationsEnabled (or set it explicitly)
+    public void updateNotificationsEnabled(UUID userId, NotificationEnableRequest request) {
+        verifyResourceOwnership(userId);
+        User user = getUserById(userId);
+
+        user.setNotificationsEnabled(request.isEnabled());
+        userRepository.save(user);
     }
 
     public User getUserById(UUID userId) {
@@ -62,10 +98,5 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
     }
 
-    public void checkIfUserExists(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException("User not found with ID: " + userId);
-        }
-    }
 }
 

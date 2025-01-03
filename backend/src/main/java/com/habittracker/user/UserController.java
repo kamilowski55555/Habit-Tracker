@@ -1,6 +1,8 @@
 package com.habittracker.user;
 
 import com.habittracker.common.util.SecurityContextUtils;
+import com.habittracker.user.dto.NotificationEnableRequest;
+import com.habittracker.user.dto.NotificationTimeRequest;
 import com.habittracker.user.dto.UserDetailsDto;
 import com.habittracker.user.dto.UserListDto;
 import com.habittracker.user.dto.UserRegisterDto;
@@ -40,8 +42,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDetailsDto> getUserDetails(@PathVariable UUID userId) {
-        UUID currentUserId = SecurityContextUtils.getCurrentUserId();
-        UserDetailsDto userDetailsDto = userService.getUserDetails(currentUserId, userId);
+        UserDetailsDto userDetailsDto = userService.getUserDetails(userId);
         return ResponseEntity.ok(userDetailsDto);
     }
 
@@ -51,7 +52,25 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
         return ResponseEntity.status(501).build();
+    }
+
+    @PostMapping("/{userId}/notifications")
+    public ResponseEntity<Void> addNotificationTime(@PathVariable UUID userId,@RequestBody NotificationTimeRequest request) {
+        userService.addNotificationTime(userId, request.getTime());
+        return ResponseEntity.noContent().build();  // 204 for "update"
+    }
+
+    @DeleteMapping("/{userId}/notifications")
+    public ResponseEntity<Void> removeNotificationTime(@PathVariable UUID userId, @RequestBody NotificationTimeRequest request) {
+        userService.removeNotificationTime(userId, request.getTime());
+        return ResponseEntity.ok().build(); // 200 OK
+    }
+
+    @PatchMapping("/{userId}/notifications")
+    public ResponseEntity<Void> updateNotificationsEnabled(@PathVariable UUID userId, @RequestBody NotificationEnableRequest request) {
+        userService.updateNotificationsEnabled(userId, request);
+        return ResponseEntity.noContent().build();
     }
 }

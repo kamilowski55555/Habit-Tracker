@@ -3,11 +3,14 @@ package com.habittracker.user;
 import com.habittracker.habit.Habit;
 import com.habittracker.progress.Progress;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,9 +29,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -84,6 +90,12 @@ public class User implements UserDetails {
 
     @Column(name = "notifications_enabled")
     private boolean notificationsEnabled;
+
+    // We'll store up to 3 LocalTime values in a separate table, but all tied to the user
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_notification_times", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "notification_time")
+    private Set<LocalTime> notificationTimes = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

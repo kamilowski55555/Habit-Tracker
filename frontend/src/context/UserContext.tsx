@@ -26,7 +26,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
 
         try {
-            const userDetails = await UserService.UserDetailsDto(userId);
+            const userDetails = await UserService.getUserDetails(userId);
             setUser(userDetails);
         } catch (error) {
             console.error('Failed to refresh user data:', error);

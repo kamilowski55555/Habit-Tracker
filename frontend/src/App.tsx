@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage';
 import HabitsPage from './pages/HabitsPage';
 import RewardsPage from './pages/RewardsPage';
 import ArticlesPage from './pages/ArticlesPage.tsx';
+import ProfilePage from './pages/ProfilePage.tsx';
 import ProtectedRoute from "./components/layout/ProtectedRoute.tsx";
 import RegisterPage from "./pages/RegisterPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
@@ -32,6 +33,7 @@ const App = () => {
                     <Route path="habits" element={<HabitsPage />} />
                     <Route path="rewards" element={<RewardsPage />} />
                     <Route path="explore" element={<ArticlesPage />} />
+                    <Route path="profile" element={<ProfilePage />} />
                 </Route>
 
                 {/* Catch-All Redirect */}

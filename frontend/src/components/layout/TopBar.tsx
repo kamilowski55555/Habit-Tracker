@@ -3,9 +3,11 @@ import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { useUser } from '../../context/UserContext'; // Import the `useUser` hook
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const TopBar = () => {
     const { user } = useUser(); // Get the user data from the context
+    const navigate = useNavigate(); // Hook for navigating to other pages
 
     return (
         <AppBar
@@ -22,7 +24,7 @@ const TopBar = () => {
                     <EmojiEventsIcon sx={{ fontSize: 18, marginLeft: 1, marginRight: 0.5 }} />
                     {user?.currencyBalance ?? 0} coins
                 </Typography>
-                <IconButton color="inherit">
+                <IconButton color="inherit" onClick={() => navigate('/profile')}>
                     <SettingsIcon />
                 </IconButton>
             </Toolbar>

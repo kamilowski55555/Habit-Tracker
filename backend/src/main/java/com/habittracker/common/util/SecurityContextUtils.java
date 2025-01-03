@@ -1,5 +1,6 @@
 package com.habittracker.common.util;
 
+import com.habittracker.common.exception.UnauthorizedResourceAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -39,6 +40,11 @@ public class SecurityContextUtils {
         }
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(role));
+    }
+    public static void verifyResourceOwnership(UUID resourceOwnerId) {
+        if (!getCurrentUserId().equals(resourceOwnerId)) {
+            throw new UnauthorizedResourceAccessException("You do not have permission to access this resource.");
+        }
     }
 
     /**

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -17,6 +19,7 @@ public class UserDetailsDto {
     private String lastName;
     private long currencyBalance;
     private boolean notificationsEnabled;
+    private Set<LocalTime> notificationTimes;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }
