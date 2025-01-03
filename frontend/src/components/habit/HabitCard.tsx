@@ -1,15 +1,16 @@
 import React from 'react';
 import { Card, CardContent, Typography, Button, Box } from '@mui/material';
 import { HabitListDto } from '../../types';
-import { mapToFrontendDays } from './DaySelector'; // Import mapping function
+import { mapToFrontendDays } from './DaySelector';
 
 interface HabitCardProps {
     habit: HabitListDto;
     onEdit: () => void;
     onDelete: () => void;
+    onStats: () => void; // New handler for viewing stats
 }
 
-const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete }) => {
+const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onStats }) => {
     return (
         <Card sx={{ marginBottom: 2 }}>
             <CardContent>
@@ -32,6 +33,9 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete }) => {
                     </Button>
                     <Button variant="outlined" color="error" onClick={onDelete}>
                         Delete
+                    </Button>
+                    <Button variant="outlined" color="info" onClick={onStats}>
+                        Stats
                     </Button>
                 </Box>
             </CardContent>

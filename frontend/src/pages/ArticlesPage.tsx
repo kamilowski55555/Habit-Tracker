@@ -50,7 +50,7 @@ const ArticlesPage: React.FC = () => {
         fetchArticles();
     }, [page, sort, debouncedSearch]);
 
-    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 

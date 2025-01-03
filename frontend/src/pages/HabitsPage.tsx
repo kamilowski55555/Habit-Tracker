@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import HabitList from '../components/habit/HabitList';
+import HabitStatsDialog from '../components/habit/HabitStatsDialog';
 import HabitService from '../services/HabitService';
 import { HabitListDto, HabitCreateDto } from '../types';
 import CreateHabitModal from '../components/habit/CreateHabitModal';
@@ -11,6 +12,8 @@ const HabitsPage: React.FC = () => {
     const [loading, setLoading] = useState(false); // Track loading state
     const [openCreate, setOpenCreate] = useState(false); // Control CreateHabitModal
     const [editingHabit, setEditingHabit] = useState<HabitListDto | null>(null); // Track habit to edit
+    const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null); // Track habit for stats
+    const [statsDialogOpen, setStatsDialogOpen] = useState(false); // Control stats dialog visibility
 
     // Fetch habits from the backend
     const fetchHabits = async () => {
@@ -67,6 +70,11 @@ const HabitsPage: React.FC = () => {
         }
     };
 
+    const handleViewStats = (habitId: string) => {
+        setSelectedHabitId(habitId);
+        setStatsDialogOpen(true);
+    };
+
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>
@@ -88,6 +96,7 @@ const HabitsPage: React.FC = () => {
                     habits={habits}
                     onEdit={(habit) => setEditingHabit(habit)}
                     onDelete={handleDeleteHabit}
+                    onStats={handleViewStats} // Pass stats handler
                 />
             )}
 
@@ -101,10 +110,19 @@ const HabitsPage: React.FC = () => {
             {/* Modal for editing habits */}
             {editingHabit && (
                 <EditHabitModal
-                    open={!!editingHabit}  // Ensures the modal visibility aligns with editingHabit's existence
+                    open={!!editingHabit} // Ensures the modal visibility aligns with editingHabit's existence
                     onClose={() => setEditingHabit(null)}
                     habit={editingHabit} // Passes the habit to pre-fill the form
                     onSubmit={(habitData) => handleEditHabit(editingHabit.id, habitData)}
+                />
+            )}
+
+            {/* Stats Dialog */}
+            {selectedHabitId && (
+                <HabitStatsDialog
+                    open={statsDialogOpen}
+                    habitId={selectedHabitId}
+                    onClose={() => setStatsDialogOpen(false)}
                 />
             )}
         </Box>

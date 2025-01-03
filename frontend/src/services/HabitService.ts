@@ -5,6 +5,7 @@ import {
     HabitDetailsDto,
     HabitListDto,
     HabitModifyDto,
+    HabitStatsDto,
 } from '../types';
 
 const HABITS_BASE_URL = '/habits';
@@ -89,6 +90,15 @@ const HabitService = {
             throw error;
         }
     },
+    async getHabitStats(habitId: string): Promise<HabitStatsDto> {
+        try {
+            const response = await ApiClient.get<HabitStatsDto>(`${HABITS_BASE_URL}/${habitId}/stats`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching statistics for habit ID: ${habitId}`, error);
+            throw error;
+        }
+    }
 };
 
 export default HabitService;

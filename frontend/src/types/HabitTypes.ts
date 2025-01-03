@@ -34,3 +34,16 @@ export interface HabitModifyDto {
     currencyAmount: number;  // Coins rewarded or deducted
     icon?: string;           // Optional icon
 }
+
+export interface HabitStatsDto {
+    id: string; // UUID of the habit
+    name: string; // Name of the habit
+    type: 'GOOD' | 'BAD'; // Type of habit
+    creationDate: string; // ISO date of when the habit was created
+    totalCompletions: number; // Total number of times the habit was completed
+    completionsThisMonth: number; // Number of completions in the current month
+    currentStreak: number; // Current streak of successful days
+    longestStreak: number; // Longest streak of successful days
+    completedDaysThisMonth: number; // Days completed this month
+    projectedDaysThisMonth: number; // Total expected days for the habit this month
+}

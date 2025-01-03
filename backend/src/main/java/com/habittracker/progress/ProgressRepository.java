@@ -21,4 +21,7 @@ public interface ProgressRepository extends JpaRepository<Progress, UUID> {
     List<Progress> findByDate(LocalDate date);
 
     boolean existsByHabitIdAndDate(UUID id, LocalDate tomorrow);
+
+    // For ordering by date ascending
+    List<Progress> findByHabitIdOrderByDateAsc(UUID habitId);
 }

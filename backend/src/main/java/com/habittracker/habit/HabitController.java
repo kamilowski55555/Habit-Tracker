@@ -5,6 +5,7 @@ import com.habittracker.habit.dto.HabitCreateDto;
 import com.habittracker.habit.dto.HabitDetailsDto;
 import com.habittracker.habit.dto.HabitListDto;
 import com.habittracker.habit.dto.HabitModifyDto;
+import com.habittracker.habit.dto.HabitStatsDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -97,5 +98,12 @@ public class HabitController {
         habitService.deleteHabit(habitId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{habitId}/stats")
+    public ResponseEntity<HabitStatsDto> getHabitStats(@PathVariable UUID habitId) {
+        HabitStatsDto statsDto = habitService.getHabitStats(habitId);
+        return ResponseEntity.ok(statsDto);
+    }
+
 }
 
