@@ -1,5 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Box, Typography, CircularProgress, Alert, Pagination, Select, MenuItem, FormControl, InputLabel, TextField } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+    Box,
+    Typography,
+    CircularProgress,
+    Alert,
+    Pagination,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    TextField,
+    Button,
+    Grid,
+} from '@mui/material';
 import ArticleList from '../components/article/ArticleList';
 import ArticleDetailsDialog from '../components/article/ArticleDetailsDialog';
 import ArticleService from '../services/ArticleService';
@@ -13,29 +26,23 @@ const ArticlesPage: React.FC = () => {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [sort, setSort] = useState<string>('createdAt,desc');
     const [search, setSearch] = useState<string>(''); // Current search query
-    const [debouncedSearch, setDebouncedSearch] = useState<string>(''); // Debounced search query
+    const [submittedSearch, setSubmittedSearch] = useState<string>(''); // Search query submitted via button/Enter
 
     const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
     const pageSize = 5;
 
-    // Debounce logic for search
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedSearch(search); // Set debounced value after delay
-        }, 500); // Adjust delay as needed (e.g., 500ms)
-
-        return () => {
-            clearTimeout(handler); // Clear timeout if user types again
-        };
-    }, [search]); // Runs whenever `search` changes
-
     const fetchArticles = async () => {
         setLoading(true);
         setError(null);
         try {
-            const data: PaginatedArticles = await ArticleService.getArticles(page - 1, pageSize, sort, debouncedSearch);
+            const data: PaginatedArticles = await ArticleService.getArticles(
+                page - 1,
+                pageSize,
+                sort,
+                submittedSearch // Use the submitted search query
+            );
             setArticles(data.content);
             setTotalPages(data.totalPages);
         } catch (error) {
@@ -48,7 +55,7 @@ const ArticlesPage: React.FC = () => {
 
     useEffect(() => {
         fetchArticles();
-    }, [page, sort, debouncedSearch]);
+    }, [page, sort, submittedSearch]); // Run fetch on page, sort, or search submit
 
     const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -60,7 +67,17 @@ const ArticlesPage: React.FC = () => {
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(event.target.value);
+    };
+
+    const handleSearchSubmit = () => {
+        setSubmittedSearch(search); // Update the search term
         setPage(1); // Reset to first page when search changes
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleSearchSubmit(); // Trigger search on Enter key press
+        }
     };
 
     const handleArticleClick = (id: string) => {
@@ -87,35 +104,60 @@ const ArticlesPage: React.FC = () => {
                 </Box>
             ) : (
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                        <TextField
-                            label="Search by title"
-                            variant="outlined"
-                            size="small"
-                            value={search}
-                            onChange={handleSearchChange}
-                            sx={{ flexGrow: 1, marginRight: 2 }}
-                        />
-                        <FormControl size="small" sx={{ minWidth: 150 }}>
-                            <InputLabel>Sort By</InputLabel>
-                            <Select value={sort} onChange={handleSortChange}>
-                                <MenuItem value="createdAt,desc">Newest</MenuItem>
-                                <MenuItem value="createdAt,asc">Oldest</MenuItem>
-                                <MenuItem value="title,asc">Title (A-Z)</MenuItem>
-                                <MenuItem value="title,desc">Title (Z-A)</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
+                    {/* Search and Sort Section */}
+                    <Grid container spacing={2} sx={{ marginBottom: 2 }}>
+                        <Grid item xs={12} sm={6} md={8}>
+                            <TextField
+                                label="Search by title"
+                                variant="outlined"
+                                size="small"
+                                value={search}
+                                onChange={handleSearchChange}
+                                onKeyDown={handleKeyDown} // Trigger search on Enter
+                                fullWidth
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={3} md={2}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleSearchSubmit} // Trigger search on button click
+                                fullWidth
+                            >
+                                Search
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12} sm={3} md={2}>
+                            <FormControl fullWidth size="small">
+                                <InputLabel>Sort By</InputLabel>
+                                <Select value={sort} onChange={handleSortChange}>
+                                    <MenuItem value="createdAt,desc">Newest</MenuItem>
+                                    <MenuItem value="createdAt,asc">Oldest</MenuItem>
+                                    <MenuItem value="title,asc">Title (A-Z)</MenuItem>
+                                    <MenuItem value="title,desc">Title (Z-A)</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    </Grid>
 
                     <ArticleList articles={articles} onArticleClick={handleArticleClick} />
 
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 3 }}>
-                        <Pagination count={totalPages} page={page} onChange={handlePageChange} color="primary" />
+                        <Pagination
+                            count={totalPages}
+                            page={page}
+                            onChange={handlePageChange}
+                            color="primary"
+                        />
                     </Box>
                 </>
             )}
 
-            <ArticleDetailsDialog open={isDialogOpen} articleId={selectedArticleId} onClose={handleCloseDialog} />
+            <ArticleDetailsDialog
+                open={isDialogOpen}
+                articleId={selectedArticleId}
+                onClose={handleCloseDialog}
+            />
         </Box>
     );
 };
