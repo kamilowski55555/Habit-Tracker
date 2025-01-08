@@ -6,12 +6,11 @@ import {
     DialogActions,
     Button,
     Typography,
-    CircularProgress,
     Box,
+    LinearProgress,
 } from '@mui/material';
 import HabitService from '../../services/HabitService';
 import { HabitStatsDto } from '../../types';
-import CircularProgressWithLabel from '@mui/material/CircularProgress'; // For custom progress display
 
 interface HabitStatsDialogProps {
     open: boolean;
@@ -56,9 +55,7 @@ const HabitStatsDialog: React.FC<HabitStatsDialogProps> = ({ open, habitId, onCl
             <DialogTitle>Habit Statistics</DialogTitle>
             <DialogContent>
                 {loading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
-                        <CircularProgress />
-                    </Box>
+                    <Typography align="center">Loading...</Typography>
                 ) : error ? (
                     <Typography color="error">{error}</Typography>
                 ) : stats ? (
@@ -82,15 +79,18 @@ const HabitStatsDialog: React.FC<HabitStatsDialogProps> = ({ open, habitId, onCl
                         <Typography variant="subtitle1">
                             Longest Streak: {stats.longestStreak} days
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 3 }}>
-                            <CircularProgressWithLabel
-                                value={calculateCompletionPercentage()}
-                                sx={{ marginRight: 2 }}
-                            />
+
+                        {/* Linear Progress Bar */}
+                        <Box sx={{ marginTop: 3 }}>
                             <Typography variant="subtitle1">
                                 Monthly Quota: {stats.completedDaysThisMonth}/{stats.projectedDaysThisMonth} (
                                 {calculateCompletionPercentage()}%)
                             </Typography>
+                            <LinearProgress
+                                variant="determinate"
+                                value={calculateCompletionPercentage()}
+                                sx={{ height: 10, borderRadius: 5, marginTop: 1 }}
+                            />
                         </Box>
                     </Box>
                 ) : (

@@ -43,13 +43,25 @@ const DaySelector: React.FC<DaySelectorProps> = ({ selectedDays, onChange }) => 
     };
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexWrap: 'wrap', // Allow wrapping
+                justifyContent: 'center',
+                gap: 1,
+                maxWidth: '100%', // Prevent overflow
+            }}
+        >
             {daysOfWeek.map((day) => (
                 <Button
                     key={day}
                     variant={selectedDays.includes(day) ? 'contained' : 'outlined'}
                     color={selectedDays.includes(day) ? 'primary' : 'default'}
                     onClick={() => toggleDay(day)}
+                    sx={{
+                        minWidth: 40, // Ensure consistent button width
+                        maxWidth: 60, // Prevent overly large buttons
+                    }}
                 >
                     {day}
                 </Button>

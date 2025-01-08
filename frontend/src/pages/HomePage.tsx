@@ -11,6 +11,15 @@ const HomePage: React.FC = () => {
     const [error, setError] = useState<string | null>(null); // Handle errors
     const { refreshUser } = useUser(); // Access the refreshUser function from context
 
+    // Get today's date and day name
+    const today = new Date();
+    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., "Monday"
+    const formattedDate = today.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }); // e.g., "January 8, 2025"
+
     // Fetch progress data from the backend
     const fetchProgress = async () => {
         setLoading(true);
@@ -52,6 +61,11 @@ const HomePage: React.FC = () => {
 
     return (
         <Box sx={{ padding: 3 }}>
+            {/* Display today's date */}
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+                {dayName}, {formattedDate}
+            </Typography>
+
             <Typography variant="h4" gutterBottom>
                 Your Progress
             </Typography>

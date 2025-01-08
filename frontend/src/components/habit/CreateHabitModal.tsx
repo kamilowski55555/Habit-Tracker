@@ -7,9 +7,31 @@ import {
     Button,
     TextField,
     MenuItem,
+    Box,
+    Typography,
+    Grid,
 } from '@mui/material';
-import DaySelector, { mapToBackendDays } from './DaySelector'; // Import DaySelector
+import DaySelector, { mapToBackendDays } from './DaySelector';
 import { HabitCreateDto } from '../../types';
+
+const habitTemplates = [
+    {
+        name: 'Drink Water',
+        type: 'GOOD',
+        targetValue: 8,
+        habitDays: ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'],
+        currencyAmount: 10,
+        icon: '💧',
+    },
+    {
+        name: 'Avoid Junk Food',
+        type: 'BAD',
+        targetValue: 5,
+        habitDays: ['MO', 'TU', 'WE', 'TH', 'FR'],
+        currencyAmount: 20,
+        icon: '🍔',
+    },
+];
 
 interface CreateHabitModalProps {
     open: boolean;
@@ -22,7 +44,7 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
         name: '',
         type: 'GOOD',
         targetValue: 0,
-        habitDays: [], // Default as an empty array
+        habitDays: [],
         currencyAmount: 0,
         icon: '',
     });
@@ -36,17 +58,20 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
         });
     };
 
-    // Handle submission of the form
+    // Prefill form data when a template is selected
+    const handleTemplateSelect = (template: HabitCreateDto) => {
+        setFormData(template);
+    };
+
     const handleSubmit = () => {
         const backendData = {
             ...formData,
-            habitDays: mapToBackendDays(formData.habitDays), // Convert to backend format
+            habitDays: mapToBackendDays(formData.habitDays),
         };
-        onSubmit(backendData); // Pass processed data to parent
-        resetForm(); // Reset the form for future use
+        onSubmit(backendData);
+        resetForm();
     };
 
-    // Reset the form state
     const resetForm = () => {
         setFormData({
             name: '',
@@ -59,9 +84,28 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
     };
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <DialogTitle>Create a New Habit</DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {/* Template Selection */}
+                <Box>
+                    <Typography variant="h6">Choose a Template</Typography>
+                    <Grid container spacing={2}>
+                        {habitTemplates.map((template, index) => (
+                            <Grid item xs={6} key={index}>
+                                <Button
+                                    variant="outlined"
+                                    fullWidth
+                                    onClick={() => handleTemplateSelect(template)}
+                                >
+                                    {template.name}
+                                </Button>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+
+                {/* Form Fields */}
                 <TextField
                     label="Name"
                     name="name"
@@ -104,8 +148,8 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
                     margin="normal"
                 />
                 <DaySelector
-                    selectedDays={formData.habitDays} // Pass current state
-                    onChange={(days) => setFormData({ ...formData, habitDays: days })} // Update state
+                    selectedDays={formData.habitDays}
+                    onChange={(days) => setFormData({ ...formData, habitDays: days })}
                 />
                 <TextField
                     label="Icon (Emoji)"

@@ -87,6 +87,8 @@ public class HabitService {
                 .currencyAmount(habitCreateDto.getCurrencyAmount())
                 .icon(habitCreateDto.getIcon())
                 .build();
+
+        habit = habitRepository.save(habit);
         // If today’s day of week matches the newly created habit’s schedule, create a Progress record
         if (habit.getHabitDays().contains(LocalDate.now().getDayOfWeek())) {
             Progress progress = Progress.builder()
@@ -99,7 +101,7 @@ public class HabitService {
             progressRepository.save(progress);
         }
         // Save and return ID
-        return habitRepository.save(habit).getId();
+        return habit.getId();
     }
 
     @Transactional
@@ -136,6 +138,10 @@ public class HabitService {
             habit.setIcon(habitModifyDto.getIcon());
         }
 
+        // Save the habit first
+        habitRepository.save(habit);
+
+        // Update or create progress if applicable
         if (habit.getHabitDays().contains(LocalDate.now().getDayOfWeek()) && targetChanged) {
             Optional<Progress> maybeProgress = progressRepository
                     .findByHabitIdAndDate(habit.getId(), LocalDate.now());
@@ -155,10 +161,8 @@ public class HabitService {
                 progressRepository.save(progress);
             }
         }
-
-        // Save the modified habit
-        habitRepository.save(habit);
     }
+
 
     @Transactional
     public void deleteHabit(UUID habitId) {
