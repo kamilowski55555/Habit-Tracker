@@ -14,6 +14,11 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ userId }) =
     const [notificationTimes, setNotificationTimes] = useState<string[]>([]);
     const [newTime, setNewTime] = useState<string>(''); // To hold the new time to add
 
+    // Utility function to format time (HH:mm:ss to HH:mm)
+    const formatTime = (time: string): string => {
+        return time.slice(0, 5); // Extract the first 5 characters (HH:mm)
+    };
+
     useEffect(() => {
         const fetchUserDetails = async () => {
             try {
@@ -27,12 +32,11 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ userId }) =
         fetchUserDetails();
     }, [userId]);
 
-
     const handleToggleNotifications = async () => {
         try {
             await UserService.toggleNotifications(userId, { enabled: !notificationsEnabled });
             setNotificationsEnabled(!notificationsEnabled);
-            refreshUser();
+            await refreshUser();
         } catch (error) {
             console.error('Failed to toggle notifications:', error);
         }
@@ -44,7 +48,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ userId }) =
             await UserService.addNotificationTime(userId, { time: newTime });
             setNotificationTimes((prev) => [...prev, newTime]);
             setNewTime('');
-            refreshUser();
+            await refreshUser();
         } catch (error) {
             console.error('Failed to add notification time:', error);
         }
@@ -54,7 +58,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ userId }) =
         try {
             await UserService.deleteNotificationTime(userId, { time });
             setNotificationTimes((prev) => prev.filter((t) => t !== time));
-            refreshUser();
+            await refreshUser();
         } catch (error) {
             console.error('Failed to delete notification time:', error);
         }
@@ -82,7 +86,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({ userId }) =
                                 </IconButton>
                             }
                         >
-                            <ListItemText primary={time} />
+                            <ListItemText primary={formatTime(time)} />
                         </ListItem>
                     ))}
                 </List>
