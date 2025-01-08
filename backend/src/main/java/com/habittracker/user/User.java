@@ -74,6 +74,9 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "goal")
+    private String goal;
+
     @Column(name = "currency_balance")
     private long currencyBalance;
 

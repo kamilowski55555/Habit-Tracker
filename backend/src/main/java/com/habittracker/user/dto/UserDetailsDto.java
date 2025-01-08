@@ -17,6 +17,7 @@ public class UserDetailsDto {
     private String email;
     private String firstName;
     private String lastName;
+    private String goal;
     private long currencyBalance;
     private boolean notificationsEnabled;
     private Set<LocalTime> notificationTimes;

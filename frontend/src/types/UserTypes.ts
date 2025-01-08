@@ -6,9 +6,15 @@ export interface UserDetailsDto {
     lastName: string;
     currencyBalance: number; // Long in Java maps to number in TypeScript
     notificationsEnabled: boolean;
+    goal: string;
     notificationTimes: string[]; // Array of LocalTime in ISO string format
     createdAt: string; // LocalDateTime as ISO string
     modifiedAt: string; // LocalDateTime as ISO string
+}
+export interface UserUpdateDto {
+    firstName: string;
+    lastName: string;
+    goal: string;
 }
 
 export interface LoginPayload {

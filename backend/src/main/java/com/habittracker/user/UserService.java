@@ -4,6 +4,7 @@ import com.habittracker.common.exception.UserNotFoundException;
 import com.habittracker.user.dto.NotificationEnableRequest;
 import com.habittracker.user.dto.UserDetailsDto;
 import com.habittracker.user.dto.UserRegisterDto;
+import com.habittracker.user.dto.UserUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -54,12 +55,30 @@ public class UserService implements UserDetailsService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .goal(user.getGoal())
                 .notificationsEnabled(user.isNotificationsEnabled())
                 .notificationTimes(user.getNotificationTimes())
                 .currencyBalance(user.getCurrencyBalance())
                 .createdAt(user.getCreatedAt())
                 .modifiedAt(user.getModifiedAt())
                 .build();
+    }
+
+    public void updateUser(UUID userId, UserUpdateDto updateDTO) {
+        verifyResourceOwnership(userId);
+        User user = getUserById(userId);
+
+        if (updateDTO.getFirstName() != null){
+            user.setFirstName(updateDTO.getFirstName());
+        }
+        if (updateDTO.getLastName() != null) {
+            user.setLastName(updateDTO.getLastName());
+        }
+        if (updateDTO.getGoal() != null) {
+            user.setGoal(updateDTO.getGoal());
+        }
+
+        userRepository.save(user);
     }
 
     public void addNotificationTime(UUID userId, LocalTime time) {

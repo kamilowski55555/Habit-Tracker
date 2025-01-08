@@ -1,6 +1,6 @@
 // services/UserService.ts
 import ApiClient from '../utils/api'; // Replace with the path to your Axios instance
-import {NotificationEnableRequest, NotificationTimeRequest, UserDetailsDto} from '../types'; // Correctly import the DTO type
+import {NotificationEnableRequest, NotificationTimeRequest, UserDetailsDto, UserUpdateDto} from '../types'; // Correctly import the DTO type
 
 const USER_BASE_URL = '/users'; // Base URL for user-related endpoints
 
@@ -13,6 +13,15 @@ const UserService = {
         } catch (error) {
             console.error(`Failed to fetch user details for ID ${userId}:`, error);
             throw error; // Re-throw error for the caller to handle
+        }
+    },
+    async updateUser(userId: string, payload: UserUpdateDto): Promise<void> {
+        try {
+            // Use PATCH for partial updates
+            await ApiClient.patch<void>(`${USER_BASE_URL}/${userId}`, payload);
+        } catch (error) {
+            console.error(`Failed to update user details for ID ${userId}:`, error);
+            throw error; // Rethrow to handle errors at the caller level
         }
     },
     async toggleNotifications(userId: string, payload: NotificationEnableRequest): Promise<void> {

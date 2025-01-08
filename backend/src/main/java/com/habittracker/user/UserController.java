@@ -48,7 +48,8 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Void> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateDto updateDTO) {
-        return ResponseEntity.status(501).build();
+        userService.updateUser(userId, updateDTO);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{userId}")
