@@ -11,8 +11,19 @@ interface RewardCardProps {
 
 const RewardCard: React.FC<RewardCardProps> = ({ reward, onBuy, onEdit, onDelete }) => {
     return (
-        <Card sx={{ marginBottom: 2, padding: 2 }}>
+        <Card sx={{ marginBottom: 1, padding: 2, textAlign: 'center' }}>
             <CardContent>
+                {/* Emoji */}
+                <Typography
+                    sx={{
+                        fontSize: '3rem',
+                        marginBottom: 1,
+                        lineHeight: 1,
+                    }}
+                >
+                    {reward.emoji}
+                </Typography>
+
                 {/* Reward Name */}
                 <Typography variant="h6" gutterBottom>
                     {reward.name}
@@ -28,10 +39,10 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, onBuy, onEdit, onDelete
                     <Button variant="contained" color="primary" onClick={() => onBuy(reward.id)}>
                         Buy
                     </Button>
-                    <Button variant="outlined" color="secondary" onClick={() => onEdit(reward)}>
+                    <Button variant="contained" color="warning" onClick={() => onEdit(reward)}>
                         Edit
                     </Button>
-                    <Button variant="outlined" color="error" onClick={() => onDelete(reward.id)}>
+                    <Button variant="contained" color="error" onClick={() => onDelete(reward.id)}>
                         Delete
                     </Button>
                 </Box>

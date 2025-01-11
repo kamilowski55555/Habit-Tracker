@@ -21,7 +21,7 @@ const habitTemplates = [
         targetValue: 8,
         habitDays: ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'],
         currencyAmount: 10,
-        icon: '💧',
+
     },
     {
         name: 'Avoid Junk Food',
@@ -29,7 +29,7 @@ const habitTemplates = [
         targetValue: 5,
         habitDays: ['MO', 'TU', 'WE', 'TH', 'FR'],
         currencyAmount: 20,
-        icon: '🍔',
+
     },
 ];
 
@@ -46,7 +46,7 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
         targetValue: 0,
         habitDays: [],
         currencyAmount: 0,
-        icon: '',
+
     });
 
     // Handle input changes for text and number fields
@@ -79,7 +79,7 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
             targetValue: 0,
             habitDays: [],
             currencyAmount: 0,
-            icon: '',
+
         });
     };
 
@@ -150,14 +150,6 @@ const CreateHabitModal: React.FC<CreateHabitModalProps> = ({ open, onClose, onSu
                 <DaySelector
                     selectedDays={formData.habitDays}
                     onChange={(days) => setFormData({ ...formData, habitDays: days })}
-                />
-                <TextField
-                    label="Icon (Emoji)"
-                    name="icon"
-                    value={formData.icon}
-                    onChange={handleChange}
-                    fullWidth
-                    margin="normal"
                 />
             </DialogContent>
             <DialogActions>

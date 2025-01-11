@@ -47,6 +47,9 @@ public class Reward {
     @Column(name = "cost", nullable = false)
     private int cost;
 
+    @Column(name = "emoji")
+    private String emoji;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

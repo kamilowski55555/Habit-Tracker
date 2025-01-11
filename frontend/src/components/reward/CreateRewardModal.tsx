@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -7,81 +8,152 @@ import {
     Button,
     TextField,
     Box,
+    Typography,
 } from '@mui/material';
+import EmojiPicker from 'emoji-picker-react';
 
 interface CreateRewardModalProps {
-    open: boolean; // Controls whether the modal is open or closed
-    onClose: () => void; // Callback to close the modal
-    onSubmit: (rewardData: { name: string; cost: number }) => void; // Callback to submit the reward data
+    open: boolean;
+    onClose: () => void;
+    onSubmit: (rewardData: { name: string; cost: number; emoji: string }) => void;
 }
 
 const CreateRewardModal: React.FC<CreateRewardModalProps> = ({ open, onClose, onSubmit }) => {
     const [name, setName] = useState<string>(''); // Reward name
     const [cost, setCost] = useState<number>(0); // Reward cost
-    const [error, setError] = useState<string | null>(null); // Form validation error
+    const [emoji, setEmoji] = useState<string>('😊'); // Selected emoji
+    const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<boolean>(false); // Emoji picker visibility
+    const emojiButtonRef = useRef<HTMLButtonElement | null>(null); // Ref for emoji button
+    const pickerRef = useRef<HTMLDivElement | null>(null); // Ref for emoji picker
+
+    // Close emoji picker when clicking outside
+    useEffect(() => {
+        const handleOutsideClick = (event: MouseEvent) => {
+            if (
+                pickerRef.current &&
+                !pickerRef.current.contains(event.target as Node) &&
+                !emojiButtonRef.current?.contains(event.target as Node)
+            ) {
+                setIsEmojiPickerOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, []);
 
     const handleSubmit = () => {
         if (!name.trim()) {
-            setError('Reward name cannot be empty.');
+            alert('Reward name cannot be empty.');
             return;
         }
         if (cost <= 0) {
-            setError('Cost must be greater than 0.');
+            alert('Cost must be greater than 0.');
             return;
         }
-        // Submit the reward data
-        onSubmit({ name, cost });
-        // Reset state and close the modal
+        onSubmit({ name, cost, emoji });
         setName('');
         setCost(0);
-        setError(null);
+        setEmoji('😊');
         onClose();
     };
 
-    const handleClose = () => {
-        // Reset state and close the modal
-        setName('');
-        setCost(0);
-        setError(null);
-        onClose();
+    const handleEmojiClick = (emojiData: { emoji: string }) => {
+        setEmoji(emojiData.emoji);
+        setIsEmojiPickerOpen(false);
     };
+
+    const getEmojiPickerPosition = () => {
+        const buttonRect = emojiButtonRef.current?.getBoundingClientRect();
+        const pickerWidth = 350;
+        const pickerHeight = 400;
+
+        if (buttonRect) {
+            let top = buttonRect.bottom + window.scrollY + 5;
+            let left = buttonRect.left + window.scrollX;
+
+            if (left + pickerWidth > window.innerWidth) {
+                left = window.innerWidth - pickerWidth - 10;
+            }
+            if (top + pickerHeight > window.innerHeight) {
+                top = buttonRect.top + window.scrollY - pickerHeight - 5;
+            }
+            return { top, left };
+        }
+        return { top: 0, left: 0 };
+    };
+
+    const emojiPickerPortal = isEmojiPickerOpen
+        ? ReactDOM.createPortal(
+            <div
+                ref={pickerRef}
+                style={{
+                    position: 'absolute',
+                    top: getEmojiPickerPosition().top,
+                    left: getEmojiPickerPosition().left,
+                    zIndex: 1300,
+                    backgroundColor: 'white',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    maxWidth: '350px',
+                    maxHeight: '400px',
+                }}
+            >
+                <EmojiPicker onEmojiClick={handleEmojiClick} searchDisabled={true} />
+            </div>,
+            document.body
+        )
+        : null;
 
     return (
-        <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Create New Reward</DialogTitle>
-            <DialogContent>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                        label="Reward Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        fullWidth
-                        required
-                    />
-                    <TextField
-                        label="Reward Cost"
-                        value={cost}
-                        onChange={(e) => setCost(Number(e.target.value))}
-                        type="number"
-                        fullWidth
-                        required
-                    />
-                    {error && (
-                        <Box sx={{ color: 'red', fontSize: '0.875rem', marginTop: 1 }}>
-                            {error}
+        <>
+            <Dialog open={open} onClose={onClose}>
+                <DialogTitle>Create New Reward</DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <TextField
+                            label="Reward Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            fullWidth
+                            required
+                        />
+                        <TextField
+                            label="Reward Cost"
+                            value={cost}
+                            onChange={(e) => setCost(Number(e.target.value))}
+                            type="number"
+                            fullWidth
+                            required
+                        />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Typography variant="body1">Selected Emoji:</Typography>
+                            <Typography variant="body1" sx={{ fontSize: '1.5rem' }}>
+                                {emoji}
+                            </Typography>
+                            <Button
+                                ref={emojiButtonRef}
+                                variant="outlined"
+                                onClick={() => setIsEmojiPickerOpen((prev) => !prev)}
+                            >
+                                {isEmojiPickerOpen ? 'Close Emoji Picker' : 'Choose Emoji'}
+                            </Button>
                         </Box>
-                    )}
-                </Box>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose} color="secondary">
-                    Cancel
-                </Button>
-                <Button onClick={handleSubmit} variant="contained" color="primary">
-                    Create
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose} color="secondary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSubmit} variant="contained" color="primary">
+                        Create
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {emojiPickerPortal}
+        </>
     );
 };
 

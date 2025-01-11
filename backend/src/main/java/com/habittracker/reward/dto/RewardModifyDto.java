@@ -10,4 +10,5 @@ import lombok.Setter;
 public class RewardModifyDto {
     private String name;
     private int cost;
+    private String emoji;
 }

@@ -28,15 +28,16 @@ const HabitCard: React.FC<HabitCardProps> = ({ habit, onEdit, onDelete, onStats 
                     Days: {mapToFrontendDays(habit.habitDays).join(', ')}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, marginTop: 2 }}>
-                    <Button variant="contained" color="primary" onClick={onEdit}>
-                        Edit
-                    </Button>
-                    <Button variant="outlined" color="error" onClick={onDelete}>
-                        Delete
-                    </Button>
-                    <Button variant="outlined" color="info" onClick={onStats}>
+                    <Button variant="contained" color="info" onClick={onStats}>
                         Stats
                     </Button>
+                    <Button variant="contained" color="warning" onClick={onEdit}>
+                        Edit
+                    </Button>
+                    <Button variant="contained" color="error" onClick={onDelete}>
+                        Delete
+                    </Button>
+
                 </Box>
             </CardContent>
         </Card>

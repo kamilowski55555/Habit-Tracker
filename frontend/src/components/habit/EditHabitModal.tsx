@@ -25,7 +25,7 @@ const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, o
         targetValue: 0,
         habitDays: [],
         currencyAmount: 0,
-        icon: '',
+
     });
 
     // Populate the form with the habit data when the modal opens
@@ -37,7 +37,7 @@ const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, o
                 targetValue: habit.targetValue,
                 habitDays: mapToFrontendDays(habit.habitDays), // Convert backend days to frontend format
                 currencyAmount: habit.currencyAmount,
-                icon: habit.icon,
+
             });
         }
     }, [habit]);
@@ -108,14 +108,6 @@ const EditHabitModal: React.FC<EditHabitModalProps> = ({ open, habit, onClose, o
                 <DaySelector
                     selectedDays={formData.habitDays} // Pass current habitDays in frontend format
                     onChange={(days) => setFormData({ ...formData, habitDays: days })} // Update state
-                />
-                <TextField
-                    label="Icon (Emoji)"
-                    name="icon"
-                    value={formData.icon}
-                    onChange={handleChange}
-                    fullWidth
-                    margin="normal"
                 />
             </DialogContent>
             <DialogActions>

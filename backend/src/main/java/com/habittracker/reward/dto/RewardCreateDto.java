@@ -16,4 +16,5 @@ public class RewardCreateDto {
     private String name;
     @Min(value = 1, message = "Cost must be greater than 0.")
     private int cost;
+    private String emoji;
 }

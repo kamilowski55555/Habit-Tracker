@@ -108,7 +108,7 @@ const ArticlesPage: React.FC = () => {
     };
 
     const handleDeleteArticle = async (id: string) => {
-        if (window.confirm('Are you sure you want to delete this article?')) {
+        // if (window.confirm('Are you sure you want to delete this article?')) {
             try {
                 await ArticleService.deleteArticle(id); // Call the delete service
                 fetchArticles(); // Refresh the article list
@@ -117,7 +117,7 @@ const ArticlesPage: React.FC = () => {
                 console.error('Error deleting article:', error);
                 alert('Failed to delete article. Please try again.');
             }
-        }
+        // }
     };
 
     return (

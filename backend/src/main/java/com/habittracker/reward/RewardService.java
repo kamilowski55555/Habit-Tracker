@@ -34,6 +34,7 @@ public class RewardService {
                         .id(reward.getId())
                         .name(reward.getName())
                         .cost(reward.getCost())
+                        .emoji(reward.getEmoji())
                         .build())
                 .toList();
     }
@@ -45,6 +46,7 @@ public class RewardService {
         Reward reward = Reward.builder()
                 .name(rewardCreateDto.getName())
                 .cost(rewardCreateDto.getCost())
+                .emoji(rewardCreateDto.getEmoji())
                 .user(user)
                 .build();
         rewardRepository.save(reward);
@@ -79,6 +81,9 @@ public class RewardService {
         }
         if (rewardModifyDto.getCost() != 0) {
             reward.setCost(rewardModifyDto.getCost());
+        }
+        if (rewardModifyDto.getEmoji() != null) {
+            reward.setEmoji(rewardModifyDto.getEmoji());
         }
 
         rewardRepository.save(reward);

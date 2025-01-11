@@ -13,4 +13,5 @@ public class RewardListDto {
     private UUID id;
     private String name;
     private int cost;
+    private String emoji;
 }

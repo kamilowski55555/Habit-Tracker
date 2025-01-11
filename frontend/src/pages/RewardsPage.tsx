@@ -45,11 +45,12 @@ const RewardsPage: React.FC = () => {
     };
 
     // Handle reward update
-    const handleEditReward = async (updatedReward: { id: string; name: string; cost: number }) => {
+    const handleEditReward = async (updatedReward: { id: string; name: string; cost: number; emoji: string }) => {
         try {
             await RewardService.updateReward(updatedReward.id, {
                 name: updatedReward.name,
                 cost: updatedReward.cost,
+                emoji: updatedReward.emoji
             });
             fetchRewards(); // Refresh the rewards list
         } catch (error) {
