@@ -1,5 +1,5 @@
 import ApiClient from '../utils/api'; // Reusable Axios instance
-import { ArticleDetailsDto, PaginatedArticles } from '../types/ArticleTypes.ts';
+import {ArticleCreateDto, ArticleDetailsDto, PaginatedArticles} from '../types/ArticleTypes.ts';
 
 const BASE_URL = '/articles';
 
@@ -40,6 +40,24 @@ const ArticleService = {
             throw error;
         }
     },
+    async createArticle(payload: ArticleCreateDto): Promise<void> {
+        try {
+            await ApiClient.post(BASE_URL, payload); // POST request to create a new article
+        } catch (error) {
+            console.error('Error creating article:', error);
+            throw error;
+        }
+    },
+
+    // Delete an article by ID
+    async deleteArticle(id: string): Promise<void> {
+        try {
+            await ApiClient.delete(`${BASE_URL}/${id}`); // DELETE request for the article
+        } catch (error) {
+            console.error(`Error deleting article with ID ${id}:`, error);
+            throw error;
+        }
+    }
 };
 
 export default ArticleService;

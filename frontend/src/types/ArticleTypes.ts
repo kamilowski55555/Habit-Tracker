@@ -6,6 +6,12 @@ export enum ArticleCategory {
     LIFESTYLE = 'LIFESTYLE',
 }
 
+export interface ArticleCreateDto {
+    title: string; // Title of the article
+    content: string; // Content of the article
+    categories: ArticleCategory[]; // Array of categories
+}
+
 // DTO for an article in the list
 export interface ArticleListDto {
     id: string; // UUID

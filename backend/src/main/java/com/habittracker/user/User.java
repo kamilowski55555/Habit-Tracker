@@ -58,6 +58,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "habit_id")
     private List<Habit> habits;
 
+
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
@@ -93,6 +94,15 @@ public class User implements UserDetails {
 
     @Column(name = "notifications_enabled")
     private boolean notificationsEnabled;
+
+    @Column(name = "achievement_1")
+    private LocalDateTime achievementFirstHabitCreatedDate;
+
+    @Column(name = "achievement_2")
+    private LocalDateTime achievementSevenDayStreakDate;
+
+    @Column(name = "achievement_3")
+    private LocalDateTime achievementCompleteHabit50TimesSuccessfullyDate;
 
     // We'll store up to 3 LocalTime values in a separate table, but all tied to the user
     @ElementCollection(fetch = FetchType.EAGER)

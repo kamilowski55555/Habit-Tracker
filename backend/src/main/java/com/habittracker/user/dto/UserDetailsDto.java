@@ -1,5 +1,6 @@
 package com.habittracker.user.dto;
 
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,10 @@ public class UserDetailsDto {
     private String firstName;
     private String lastName;
     private String goal;
+    private String role;
+    private LocalDateTime achievementFirstHabitCreatedDate;
+    private LocalDateTime achievementSevenDayStreakDate;
+    private LocalDateTime achievementCompleteHabit50TimesSuccessfullyDate;
     private long currencyBalance;
     private boolean notificationsEnabled;
     private Set<LocalTime> notificationTimes;

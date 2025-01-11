@@ -177,7 +177,7 @@ public class HabitService {
         habitRepository.deleteById(habitId);
     }
 
-    @Transactional()
+    @Transactional
     public HabitStatsDto getHabitStats(UUID habitId) {
         Habit habit = habitRepository.findById(habitId)
                 .orElseThrow(() -> new IllegalArgumentException("Habit not found with ID: " + habitId));

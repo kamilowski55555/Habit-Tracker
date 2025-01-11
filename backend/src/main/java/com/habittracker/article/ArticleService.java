@@ -1,7 +1,9 @@
 package com.habittracker.article;
 
+import com.habittracker.article.dto.ArticleCreateDto;
 import com.habittracker.article.dto.ArticleDetailsDto;
 import com.habittracker.article.dto.ArticleListDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,15 @@ public class ArticleService {
                 .build();
     }
 
+    public UUID createArticle(ArticleCreateDto articleCreateDto) {
+        Article article = Article.builder()
+                .title(articleCreateDto.getTitle())
+                .content(articleCreateDto.getContent())
+                .categories(articleCreateDto.getCategories())
+                .build();
+        return articleRepository.save(article).getId();
+    }
+
     private ArticleDetailsDto toDetailsDto(Article article) {
         return ArticleDetailsDto.builder()
                 .id(article.getId())
@@ -53,6 +64,11 @@ public class ArticleService {
                 .createdAt(article.getCreatedAt())
                 .modifiedAt(article.getModifiedAt())
                 .build();
+    }
+
+
+    public void deleteArticle(UUID id) {
+        articleRepository.deleteById(id);
     }
 }
 

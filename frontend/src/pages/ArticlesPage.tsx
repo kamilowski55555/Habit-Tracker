@@ -15,21 +15,25 @@ import {
 } from '@mui/material';
 import ArticleList from '../components/article/ArticleList';
 import ArticleDetailsDialog from '../components/article/ArticleDetailsDialog';
+import ArticleCreateModal from '../components/article/ArticleCreateModal'; // Import the modal
 import ArticleService from '../services/ArticleService';
 import { ArticleListDto, PaginatedArticles } from '../types/ArticleTypes';
+import { useUser } from '../context/UserContext';
 
 const ArticlesPage: React.FC = () => {
+    const { user } = useUser();
     const [articles, setArticles] = useState<ArticleListDto[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [sort, setSort] = useState<string>('createdAt,desc');
-    const [search, setSearch] = useState<string>(''); // Current search query
-    const [submittedSearch, setSubmittedSearch] = useState<string>(''); // Search query submitted via button/Enter
+    const [search, setSearch] = useState<string>('');
+    const [submittedSearch, setSubmittedSearch] = useState<string>('');
 
     const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false); // State for modal
 
     const pageSize = 5;
 
@@ -41,7 +45,7 @@ const ArticlesPage: React.FC = () => {
                 page - 1,
                 pageSize,
                 sort,
-                submittedSearch // Use the submitted search query
+                submittedSearch
             );
             setArticles(data.content);
             setTotalPages(data.totalPages);
@@ -55,7 +59,7 @@ const ArticlesPage: React.FC = () => {
 
     useEffect(() => {
         fetchArticles();
-    }, [page, sort, submittedSearch]); // Run fetch on page, sort, or search submit
+    }, [page, sort, submittedSearch]);
 
     const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -70,13 +74,13 @@ const ArticlesPage: React.FC = () => {
     };
 
     const handleSearchSubmit = () => {
-        setSubmittedSearch(search); // Update the search term
-        setPage(1); // Reset to first page when search changes
+        setSubmittedSearch(search);
+        setPage(1);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            handleSearchSubmit(); // Trigger search on Enter key press
+            handleSearchSubmit();
         }
     };
 
@@ -90,6 +94,32 @@ const ArticlesPage: React.FC = () => {
         setIsDialogOpen(false);
     };
 
+    const handleCreateArticle = async (title: string, content: string, categories: string[]) => {
+        try {
+            await ArticleService.createArticle({ title, content, categories });
+            fetchArticles(); // Refresh articles after creation
+            alert('Article created successfully!');
+        } catch (error) {
+            console.error('Error creating article:', error);
+            alert('Failed to create article. Please try again.');
+        } finally {
+            setIsCreateModalOpen(false); // Close the modal
+        }
+    };
+
+    const handleDeleteArticle = async (id: string) => {
+        if (window.confirm('Are you sure you want to delete this article?')) {
+            try {
+                await ArticleService.deleteArticle(id); // Call the delete service
+                fetchArticles(); // Refresh the article list
+                alert('Article deleted successfully.');
+            } catch (error) {
+                console.error('Error deleting article:', error);
+                alert('Failed to delete article. Please try again.');
+            }
+        }
+    };
+
     return (
         <Box sx={{ padding: 3 }}>
             <Typography variant="h4" gutterBottom>
@@ -98,13 +128,23 @@ const ArticlesPage: React.FC = () => {
 
             {error && <Alert severity="error">{error}</Alert>}
 
+            {user?.role === 'ROLE_ADMIN' && (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setIsCreateModalOpen(true)}
+                    sx={{ marginBottom: 2 }}
+                >
+                    Add New Article
+                </Button>
+            )}
+
             {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 5 }}>
                     <CircularProgress />
                 </Box>
             ) : (
                 <>
-                    {/* Search and Sort Section */}
                     <Grid container spacing={2} sx={{ marginBottom: 2 }}>
                         <Grid item xs={12} sm={6} md={8}>
                             <TextField
@@ -113,7 +153,7 @@ const ArticlesPage: React.FC = () => {
                                 size="small"
                                 value={search}
                                 onChange={handleSearchChange}
-                                onKeyDown={handleKeyDown} // Trigger search on Enter
+                                onKeyDown={handleKeyDown}
                                 fullWidth
                             />
                         </Grid>
@@ -121,7 +161,7 @@ const ArticlesPage: React.FC = () => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={handleSearchSubmit} // Trigger search on button click
+                                onClick={handleSearchSubmit}
                                 fullWidth
                             >
                                 Search
@@ -140,7 +180,11 @@ const ArticlesPage: React.FC = () => {
                         </Grid>
                     </Grid>
 
-                    <ArticleList articles={articles} onArticleClick={handleArticleClick} />
+                    <ArticleList
+                        articles={articles}
+                        onArticleClick={handleArticleClick}
+                        onDelete={handleDeleteArticle} // Pass delete callback to ArticleList
+                    />
 
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 3 }}>
                         <Pagination
@@ -158,6 +202,14 @@ const ArticlesPage: React.FC = () => {
                 articleId={selectedArticleId}
                 onClose={handleCloseDialog}
             />
+
+            {isCreateModalOpen && (
+                <ArticleCreateModal
+                    open={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onSubmit={handleCreateArticle}
+                />
+            )}
         </Box>
     );
 };

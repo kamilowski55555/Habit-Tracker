@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import UserService from '../services/UserService';
-import { UserDetailsDto } from '../types/UserTypes';
+import { UserDetailsDto } from '../types';
 import { getUserIdFromToken } from '../utils/jwt';
 import {useAuth} from "./AuthContext.tsx";
 

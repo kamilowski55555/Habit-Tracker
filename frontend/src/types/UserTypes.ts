@@ -6,7 +6,11 @@ export interface UserDetailsDto {
     lastName: string;
     currencyBalance: number; // Long in Java maps to number in TypeScript
     notificationsEnabled: boolean;
+    role: string;
     goal: string;
+    achievementFirstHabitCreatedDate: string;
+    achievementSevenDayStreakDate: string;
+    achievementCompleteHabit50TimesSuccessfullyDate: string;
     notificationTimes: string[]; // Array of LocalTime in ISO string format
     createdAt: string; // LocalDateTime as ISO string
     modifiedAt: string; // LocalDateTime as ISO string
