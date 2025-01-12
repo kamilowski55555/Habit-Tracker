@@ -6,6 +6,7 @@ import HabitService from '../services/HabitService';
 import { HabitListDto, HabitCreateDto } from '../types';
 import CreateHabitModal from '../components/habit/CreateHabitModal';
 import EditHabitModal from '../components/habit/EditHabitModal';
+import GptFloatingButton from "../components/layout/GptFloatingButton.tsx";
 
 const HabitsPage: React.FC = () => {
     const [habits, setHabits] = useState<HabitListDto[]>([]); // Store habit list
@@ -125,6 +126,9 @@ const HabitsPage: React.FC = () => {
                     onClose={() => setStatsDialogOpen(false)}
                 />
             )}
+
+            {/* Floating GPT Assistant Button */}
+            <GptFloatingButton />
         </Box>
     );
 };

@@ -79,17 +79,45 @@ public class NotificationSchedulerService {
     }
 
     private void sendNotificationEmail(User user, List<Progress> incomplete) {
-        // Build a simple message
+        // Separate incomplete Good vs. Bad habits
+        List<Progress> incompleteGood = incomplete.stream()
+                .filter(p -> p.getHabit().getType() == HabitType.GOOD)
+                .toList();
+
+        List<Progress> incompleteBad = incomplete.stream()
+                .filter(p -> p.getHabit().getType() == HabitType.BAD)
+                .toList();
+
+        // Build a more descriptive message
+        StringBuilder sb = new StringBuilder();
+        sb.append("Hello ").append(user.getFirstName()).append(",\n\n");
+
+        // Good habits incomplete
+        if (!incompleteGood.isEmpty()) {
+            sb.append("You still haven't completed building your future self!:\n");
+            for (Progress p : incompleteGood) {
+                sb.append(" - ").append(p.getHabit().getName()).append("\n");
+            }
+            sb.append("\n");
+        }
+
+        // Bad habits not kept in check
+        if (!incompleteBad.isEmpty()) {
+            sb.append("You're doing great by keeping these away:\n");
+            for (Progress p : incompleteBad) {
+                sb.append(" - ").append(p.getHabit().getName()).append("\n");
+            }
+            sb.append("\n");
+        }
+
+        // If neither list is empty, or you want some closing line
+        sb.append("Keep going—you've got this!\n");
+
+        // Prepare and send the email
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
         message.setSubject("Habit Reminder");
-
-        String body = "You still have incomplete habits today:\n";
-        for (Progress p : incomplete) {
-            body += "- " + p.getHabit().getName() + "\n";
-        }
-
-        message.setText(body);
+        message.setText(sb.toString());
         mailSender.send(message);
     }
 }

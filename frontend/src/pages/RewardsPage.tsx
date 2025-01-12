@@ -7,6 +7,7 @@ import { useUser } from '../context/UserContext';
 import CreateRewardModal from '../components/reward/CreateRewardModal';
 import EditRewardModal from '../components/reward/EditRewardModal';
 import BuyConfirmationDialog from '../components/reward/BuyConfirmationDialog';
+import GptFloatingButton from '../components/layout/GptFloatingButton'; // Import the floating button
 
 const RewardsPage: React.FC = () => {
     const [rewards, setRewards] = useState<RewardListDto[]>([]); // List of rewards
@@ -34,7 +35,7 @@ const RewardsPage: React.FC = () => {
     };
 
     // Handle reward creation
-    const handleCreateReward = async (newReward: { name: string; cost: number }) => {
+    const handleCreateReward = async (newReward: { name: string; cost: number; emoji: string }) => {
         try {
             await RewardService.createReward(newReward);
             fetchRewards(); // Refresh the rewards list
@@ -50,7 +51,7 @@ const RewardsPage: React.FC = () => {
             await RewardService.updateReward(updatedReward.id, {
                 name: updatedReward.name,
                 cost: updatedReward.cost,
-                emoji: updatedReward.emoji
+                emoji: updatedReward.emoji,
             });
             fetchRewards(); // Refresh the rewards list
         } catch (error) {
@@ -114,7 +115,6 @@ const RewardsPage: React.FC = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 5 }}>
                     <CircularProgress />
                 </Box>
-
             ) : (
                 <>
                     {/* Reward List */}
@@ -156,6 +156,9 @@ const RewardsPage: React.FC = () => {
                     }
                 }}
             />
+
+            {/* Floating GPT Assistant Button */}
+            <GptFloatingButton />
         </Box>
     );
 };
