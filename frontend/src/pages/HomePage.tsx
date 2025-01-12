@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress, Typography, Alert } from '@mui/material';
-import ProgressList from '../components/progress/ProgressList';
+import { Box, CircularProgress, Typography, Alert, Divider } from '@mui/material';
 import ProgressService from '../services/ProgressService';
 import { ProgressListDto } from '../types/ProgressTypes';
-import { useUser } from '../context/UserContext'; // Import useUser hook
+import ProgressList from '../components/progress/ProgressList';
+import { useUser } from '../context/UserContext';
 
 const HomePage: React.FC = () => {
-    const [progressData, setProgressData] = useState<ProgressListDto[]>([]); // Store progress data
-    const [loading, setLoading] = useState<boolean>(true); // Show loading spinner
-    const [error, setError] = useState<string | null>(null); // Handle errors
-    const { refreshUser } = useUser(); // Access the refreshUser function from context
+    const [progressData, setProgressData] = useState<ProgressListDto[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const { refreshUser } = useUser();
 
-    // Get today's date and day name
     const today = new Date();
-    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., "Monday"
+    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
     const formattedDate = today.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-    }); // e.g., "January 8, 2025"
+    });
 
-    // Fetch progress data from the backend
     const fetchProgress = async () => {
         setLoading(true);
         setError(null);
@@ -35,11 +33,9 @@ const HomePage: React.FC = () => {
         }
     };
 
-    // Update progress for a specific habit
     const updateProgress = async (id: string, updatedValue: number) => {
         try {
             await ProgressService.updateProgress(id, { currentValue: updatedValue });
-            // Update local state to reflect the change
             setProgressData((prevData) =>
                 prevData.map((progress) =>
                     progress.id === id
@@ -54,32 +50,42 @@ const HomePage: React.FC = () => {
         }
     };
 
-    // Fetch progress data on component mount
     useEffect(() => {
         fetchProgress();
     }, []);
 
+    const goodHabits = progressData.filter((habit) => habit.type === 'GOOD');
+    const badHabits = progressData.filter((habit) => habit.type === 'BAD');
+
     return (
         <Box sx={{ padding: 3 }}>
-            {/* Display today's date */}
             <Typography variant="h6" color="text.secondary" gutterBottom>
                 {dayName}, {formattedDate}
             </Typography>
-
             <Typography variant="h4" gutterBottom>
                 Your Progress
             </Typography>
 
-            {/* Error Message */}
             {error && <Alert severity="error">{error}</Alert>}
 
-            {/* Loading Spinner */}
             {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 5 }}>
                     <CircularProgress />
                 </Box>
             ) : (
-                <ProgressList progressData={progressData} onUpdate={updateProgress} />
+                <>
+                    <Typography variant="h5" gutterBottom sx={{ marginTop: 2 }}>
+                        Keep Progressing These!
+                    </Typography>
+                    <ProgressList progressData={goodHabits} onUpdate={updateProgress} />
+
+                    <Divider sx={{ marginY: 4 }} />
+
+                    <Typography variant="h5" gutterBottom>
+                        Avoid Progressing These!
+                    </Typography>
+                    <ProgressList progressData={badHabits} onUpdate={updateProgress} />
+                </>
             )}
         </Box>
     );
