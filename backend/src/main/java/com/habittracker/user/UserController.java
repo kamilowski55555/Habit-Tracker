@@ -32,7 +32,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserListDto>> getUsersList() {
-        return ResponseEntity.status(501).build();
+        return ResponseEntity.status(200).build();
     }
 
     @PostMapping("/register")

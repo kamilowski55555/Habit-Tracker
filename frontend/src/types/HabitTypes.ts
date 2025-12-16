@@ -47,3 +47,5 @@ export interface HabitStatsDto {
     completedDaysThisMonth: number; // Days completed this month
     projectedDaysThisMonth: number; // Total expected days for the habit this month
 }
+
+

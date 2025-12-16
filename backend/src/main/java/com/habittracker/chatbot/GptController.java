@@ -23,12 +23,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GptController {
 
-    // Reads the key from your application.yml at path "openai.api.key"
     @Value("${openai.api.key}")
     private String openAiApiKey;
 
-    // For simplicity, we create a RestTemplate instance here.
-    // Or you could autowire one if you have a bean.
     private final RestTemplate restTemplate = new RestTemplate();
 
     @PostMapping("/chat")
@@ -42,24 +39,18 @@ public class GptController {
                                 "content", request.getMessage()
                         )
                 )
-                // You can add "temperature", "max_tokens", etc. if needed
         );
 
-        // 2) Prepare headers (JSON, plus Bearer auth)
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(openAiApiKey);
 
-        // 3) Build the entity
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(payload, headers);
 
-        // 4) Call the OpenAI endpoint
         String url = "https://api.openai.com/v1/chat/completions";
         ResponseEntity<Map> responseEntity =
                 restTemplate.postForEntity(url, httpEntity, Map.class);
 
-        // 5) Extract the response text
-        //    According to OpenAI's structure: { choices: [ { message: { content: "..."} } ] }
         Map responseBody = responseEntity.getBody();
         if (responseBody == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -76,7 +67,6 @@ public class GptController {
         Map messageObj = (Map) firstChoice.get("message");
         String content = (String) messageObj.get("content");
 
-        // 6) Return GPT's reply as plain text
         return ResponseEntity.ok(content);
     }
 }

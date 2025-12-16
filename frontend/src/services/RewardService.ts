@@ -6,14 +6,13 @@ import { RewardListDto, RewardCreateDto, RewardModifyDto } from '../types/Reward
 const REWARDS_BASE_URL = '/rewards'; // Base URL for rewards endpoints
 
 const RewardService = {
-    // Fetch all rewards
     async getRewards(): Promise<RewardListDto[]> {
         try {
             const response = await ApiClient.get<RewardListDto[]>(REWARDS_BASE_URL);
-            return response.data; // List of rewards from the backend
+            return response.data;
         } catch (error) {
             console.error('Error fetching rewards:', error);
-            throw error; // Rethrow for the caller to handle
+            throw error;
         }
     },
 
